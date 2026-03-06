@@ -5,1182 +5,1021 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>✦ PARTICLE COSMOS ✦</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --accent: #b48cff;
+  --accent2: #6dd5ff;
+  --accent3: #ff8fd0;
+  --bg: #05030f;
+  --panel-bg: rgba(8,5,22,0.93);
+  --panel-border: rgba(180,140,255,0.18);
+  --text: #e8e0ff;
+  --muted: rgba(200,190,255,0.35);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);overflow:hidden;font-family:'Space Mono',monospace;color:var(--text);user-select:none;}
 
-  body {
-    background: #000;
-    overflow: hidden;
-    font-family: 'Space Mono', monospace;
-    color: #fff;
-  }
+#skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:var(--accent);color:#000;padding:8px 16px;border-radius:var(--radius-sm);font-size:11px;font-weight:700;letter-spacing:0.1em;text-decoration:none;transition:top 0.2s;}
+#skip-link:focus{top:16px;}
+#a11y-live{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+#canvas-container{position:fixed;inset:0;}
+#webcam{position:fixed;bottom:20px;right:20px;width:160px;height:120px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);object-fit:cover;transform:scaleX(-1);z-index:10;opacity:0.7;}
+#hand-canvas{position:fixed;bottom:20px;right:20px;width:160px;height:120px;border-radius:10px;z-index:11;transform:scaleX(-1);pointer-events:none;}
+#cam-label{position:fixed;bottom:148px;right:20px;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;opacity:0.25;z-index:12;text-align:right;}
 
-  #canvas-container {
-    position: fixed; inset: 0;
-  }
+/* ── TOP BAR ── */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:30;padding:18px 24px 14px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(5,3,15,0.75) 0%,transparent 100%);pointer-events:none;}
+#brand{pointer-events:auto;}
+#brand-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:24px;letter-spacing:0.06em;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+#brand-sub{font-size:8px;letter-spacing:0.38em;text-transform:uppercase;opacity:0.3;margin-top:3px;}
+#topbar-right{pointer-events:auto;display:flex;align-items:center;gap:12px;}
+#gesture-badge{font-size:10px;letter-spacing:0.13em;padding:5px 12px;border-radius:20px;border:1px solid var(--panel-border);background:rgba(180,140,255,0.06);opacity:0.8;transition:all 0.3s;white-space:nowrap;}
+#template-badge{font-size:11px;font-weight:700;letter-spacing:0.2em;color:var(--accent);text-shadow:0 0 16px rgba(180,140,255,0.5);min-width:120px;text-align:right;}
 
-  #webcam {
-    position: fixed;
-    bottom: 20px; right: 20px;
-    width: 180px; height: 135px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.15);
-    object-fit: cover;
-    transform: scaleX(-1);
-    z-index: 10;
-    opacity: 0.75;
-  }
+/* ── TEMPLATE PILLS ── */
+#templates-bar{position:fixed;top:68px;left:0;right:0;z-index:25;display:flex;justify-content:center;gap:5px;flex-wrap:wrap;padding:0 24px;pointer-events:auto;}
+.tpill{font-size:8px;letter-spacing:0.18em;padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);cursor:pointer;opacity:0.4;transition:all 0.25s;text-transform:uppercase;background:transparent;color:var(--text);font-family:'Space Mono',monospace;}
+.tpill:hover{opacity:0.75;border-color:rgba(255,255,255,0.28);}
+.tpill.active{opacity:1;border-color:var(--accent);background:rgba(180,140,255,0.13);box-shadow:0 0 14px rgba(180,140,255,0.22);color:var(--accent);}
+.tpill:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-  #hand-canvas {
-    position: fixed;
-    bottom: 20px; right: 20px;
-    width: 180px; height: 135px;
-    border-radius: 12px;
-    z-index: 11;
-    transform: scaleX(-1);
-    pointer-events: none;
-  }
+/* ── CONTROL PANEL ── */
+#ctrl-panel{position:fixed;left:0;top:50%;z-index:30;transform:translateY(-50%);width:264px;background:var(--panel-bg);border:1px solid var(--panel-border);border-left:none;border-radius:0 var(--radius) var(--radius) 0;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:4px 0 40px rgba(0,0,0,0.5),0 0 40px rgba(140,90,255,0.05) inset;transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);overflow:hidden;}
+#ctrl-panel.collapsed{transform:translateY(-50%) translateX(-232px);}
+#ctrl-panel-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;border-bottom:1px solid var(--panel-border);}
+#ctrl-panel-title{font-size:7px;letter-spacing:0.38em;text-transform:uppercase;opacity:0.4;font-weight:700;}
+#ctrl-toggle{position:absolute;right:-14px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:var(--panel-bg);border:1px solid var(--panel-border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.2s;z-index:1;color:var(--text);}
+#ctrl-toggle:hover{background:rgba(180,140,255,0.15);border-color:var(--accent);}
+#ctrl-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+#ctrl-body{padding:14px 16px;display:flex;flex-direction:column;gap:13px;max-height:72vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(180,140,255,0.2) transparent;}
+#ctrl-body::-webkit-scrollbar{width:3px;}
+#ctrl-body::-webkit-scrollbar-thumb{background:rgba(180,140,255,0.2);border-radius:2px;}
 
-  #ui {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 20;
-    padding: 20px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    pointer-events: none;
-  }
+.ctrl-section{display:flex;flex-direction:column;gap:9px;}
+.ctrl-section-label{font-size:7px;letter-spacing:0.38em;text-transform:uppercase;opacity:0.3;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ctrl-row{display:flex;flex-direction:column;gap:4px;}
+.ctrl-row-header{display:flex;justify-content:space-between;align-items:center;}
+.ctrl-label{font-size:9px;letter-spacing:0.1em;opacity:0.65;}
+.ctrl-value{font-size:9px;font-weight:700;letter-spacing:0.05em;color:var(--accent);min-width:36px;text-align:right;}
 
-  #title {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 22px;
-    letter-spacing: 0.05em;
-    opacity: 0.9;
-    text-shadow: 0 0 30px rgba(180,120,255,0.8);
-  }
+.ctrl-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;display:block;}
+.ctrl-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(180,140,255,0.5);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;}
+.ctrl-slider::-webkit-slider-thumb:hover{transform:scale(1.3);box-shadow:0 0 14px rgba(180,140,255,0.9);}
+.ctrl-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;}
+.ctrl-slider:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:3px;}
 
-  #subtitle {
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    opacity: 0.4;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
+.ctrl-btn-row{display:flex;gap:6px;flex-wrap:wrap;}
+.ctrl-btn{flex:1;min-width:58px;padding:7px 6px;border-radius:var(--radius-sm);border:1px solid var(--panel-border);background:rgba(255,255,255,0.03);color:var(--text);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;text-align:center;}
+.ctrl-btn:hover{background:rgba(180,140,255,0.11);border-color:var(--accent);color:var(--accent);}
+.ctrl-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.ctrl-btn.danger:hover{background:rgba(255,80,80,0.1);border-color:rgba(255,100,100,0.5);color:#ff8888;}
 
-  #status-panel {
-    text-align: right;
-  }
+.toggle-row{display:flex;justify-content:space-between;align-items:center;}
+.toggle-label{font-size:9px;letter-spacing:0.08em;opacity:0.65;}
+.toggle-switch{position:relative;width:36px;height:20px;background:rgba(255,255,255,0.07);border-radius:10px;border:1px solid var(--panel-border);cursor:pointer;transition:background 0.25s;flex-shrink:0;}
+.toggle-switch.on{background:rgba(180,140,255,0.28);border-color:var(--accent);}
+.toggle-switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.45);top:2px;left:2px;transition:transform 0.25s,background 0.25s;}
+.toggle-switch.on::after{transform:translateX(16px);background:var(--accent);}
+.toggle-switch:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-  #gesture-display {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    opacity: 0.7;
-    margin-bottom: 6px;
-  }
+.palette-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.palette-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.palette-btn:hover{transform:scale(1.25);}
+.palette-btn.active{border-color:rgba(255,255,255,0.85);box-shadow:0 0 10px rgba(255,255,255,0.35);}
+.palette-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;}
 
-  #template-display {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: #c4a0ff;
-    text-shadow: 0 0 20px rgba(180,120,255,0.6);
-  }
+/* ── STATS BAR ── */
+#stats-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:22px;align-items:center;background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:30px;padding:8px 22px;backdrop-filter:blur(16px);pointer-events:none;}
+.stat-item{text-align:center;}
+.stat-val{font-size:13px;font-weight:700;letter-spacing:-0.01em;color:var(--accent);}
+.stat-key{font-size:6px;letter-spacing:0.3em;text-transform:uppercase;opacity:0.3;display:block;margin-top:1px;}
+.stat-divider{width:1px;height:22px;background:var(--panel-border);}
 
-  #controls-hint {
-    position: fixed;
-    bottom: 20px; left: 28px;
-    z-index: 20;
-    pointer-events: none;
-  }
+/* ── EXPAND METER ── */
+#expand-meter{position:fixed;right:196px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;}
+#meter-track{width:2px;height:90px;background:rgba(255,255,255,0.06);border-radius:2px;position:relative;overflow:hidden;}
+#meter-fill{position:absolute;bottom:0;width:100%;background:linear-gradient(0deg,var(--accent),var(--accent2));border-radius:2px;transition:height 0.1s ease;box-shadow:0 0 8px rgba(180,140,255,0.45);}
+#meter-label{font-size:7px;letter-spacing:0.28em;opacity:0.18;text-transform:uppercase;writing-mode:vertical-rl;}
 
-  .hint-row {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    opacity: 0.35;
-    text-transform: uppercase;
-    line-height: 1.9;
-  }
+/* ── HELP OVERLAY ── */
+#help-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.82);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+#help-overlay.visible{opacity:1;pointer-events:auto;}
+#help-card{width:min(600px,90vw);background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;padding:36px 40px;box-shadow:0 40px 80px rgba(0,0,0,0.6);}
+#help-card h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:5px;}
+.help-sub{font-size:8px;letter-spacing:0.3em;opacity:0.3;text-transform:uppercase;margin-bottom:26px;}
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 24px;margin-bottom:24px;}
+.help-row{display:flex;align-items:center;gap:10px;}
+.help-key{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;padding:0 7px;border:1px solid rgba(255,255,255,0.2);border-radius:5px;font-size:9px;background:rgba(255,255,255,0.05);white-space:nowrap;flex-shrink:0;box-shadow:0 2px 0 rgba(0,0,0,0.4);}
+.help-desc{font-size:9px;letter-spacing:0.07em;opacity:0.55;}
+#help-close{display:block;margin:0 auto;padding:10px 32px;border:1px solid var(--panel-border);border-radius:var(--radius-sm);background:transparent;color:var(--text);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+#help-close:hover{background:rgba(180,140,255,0.1);border-color:var(--accent);}
+#help-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-  .hint-key {
-    display: inline-block;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 1px 5px;
-    border-radius: 3px;
-    margin-right: 6px;
-    font-size: 8px;
-  }
+/* ── TOASTS ── */
+#toast-container{position:fixed;top:88px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+.toast{font-size:10px;letter-spacing:0.13em;padding:7px 16px;border-radius:20px;background:rgba(180,140,255,0.14);border:1px solid rgba(180,140,255,0.3);backdrop-filter:blur(12px);animation:toastIn 0.3s ease,toastOut 0.4s ease 1.9s forwards;white-space:nowrap;}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-8px)}}
 
-  #particle-count {
-    position: fixed;
-    top: 50%; right: 28px;
-    transform: translateY(-50%);
-    z-index: 20;
-    pointer-events: none;
-    text-align: right;
-  }
+/* ── GESTURE GUIDE ── */
+#gesture-guide{position:fixed;right:192px;top:50%;transform:translateY(-50%);z-index:25;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.gg-row{display:flex;align-items:center;gap:7px;opacity:0.28;transition:opacity 0.25s,transform 0.25s;}
+.gg-row.active{opacity:1;transform:translateX(-4px);}
+.gg-icon{font-size:16px;width:28px;text-align:center;filter:drop-shadow(0 0 6px rgba(180,140,255,0.7));}
+.gg-desc{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text);white-space:nowrap;}
+.gg-divider{height:1px;background:var(--panel-border);width:100%;margin:2px 0;}
 
-  #count-value {
-    font-size: 32px;
-    font-weight: 700;
-    opacity: 0.12;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
+/* ── GESTURE FLASH OVERLAY ── */
+#gesture-flash{position:fixed;inset:0;z-index:35;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;}
+#gesture-flash-inner{font-size:88px;filter:drop-shadow(0 0 30px rgba(180,140,255,0.9));transform:scale(0.5);}
+#gesture-flash.pop{animation:gfPop 0.7s ease forwards;}
+@keyframes gfPop{0%{opacity:0}20%{opacity:0.9;transform:none}50%{opacity:0.7}100%{opacity:0}}
+#gesture-flash.pop #gesture-flash-inner{animation:gfIcon 0.7s cubic-bezier(0.16,1,0.3,1) forwards;}
+@keyframes gfIcon{0%{transform:scale(0.4)}40%{transform:scale(1.1)}60%{transform:scale(0.95)}100%{transform:scale(1)}}
 
-  #count-label {
-    font-size: 8px;
-    letter-spacing: 0.3em;
-    opacity: 0.2;
-    text-transform: uppercase;
-  }
+/* wrist-tilt meter */
+#tilt-meter{position:fixed;bottom:170px;right:192px;z-index:22;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4px;}
+#tilt-arc{width:60px;height:30px;position:relative;overflow:visible;}
+#tilt-needle{position:absolute;bottom:0;left:50%;width:2px;height:26px;background:linear-gradient(0deg,var(--accent),var(--accent2));border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(0deg);transition:transform 0.15s ease;box-shadow:0 0 6px rgba(180,140,255,0.5);}
+#tilt-label{font-size:7px;letter-spacing:0.25em;opacity:0.2;text-transform:uppercase;}
 
-  #loading-screen {
-    position: fixed; inset: 0;
-    background: #000;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.8s ease;
-  }
 
-  #loading-title {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 36px;
-    letter-spacing: 0.1em;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #c4a0ff, #80d0ff, #ff9cf0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+/* ── LOADING ── */
+#loading-screen{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease;}
+#loading-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:42px;letter-spacing:0.08em;margin-bottom:10px;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+#loading-sub{font-size:8px;letter-spacing:0.4em;opacity:0.3;text-transform:uppercase;margin-bottom:44px;}
+#loading-bar-wrap{width:240px;height:1px;background:rgba(255,255,255,0.08);overflow:hidden;}
+#loading-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width 0.35s ease;box-shadow:0 0 14px rgba(180,140,255,0.7);}
+#loading-text{font-size:8px;letter-spacing:0.25em;opacity:0.25;text-transform:uppercase;margin-top:18px;}
 
-  #loading-sub {
-    font-size: 9px;
-    letter-spacing: 0.35em;
-    opacity: 0.4;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-  }
-
-  #loading-bar-wrap {
-    width: 220px;
-    height: 1px;
-    background: rgba(255,255,255,0.1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  #loading-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #c4a0ff, #80d0ff);
-    width: 0%;
-    transition: width 0.3s ease;
-    box-shadow: 0 0 12px rgba(180,120,255,0.8);
-  }
-
-  #loading-text {
-    font-size: 8px;
-    letter-spacing: 0.25em;
-    opacity: 0.3;
-    text-transform: uppercase;
-    margin-top: 16px;
-  }
-
-  .template-pill {
-    display: inline-block;
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.15);
-    margin: 2px;
-    opacity: 0.4;
-    transition: all 0.3s;
-    text-transform: uppercase;
-  }
-
-  .template-pill.active {
-    opacity: 1;
-    border-color: #c4a0ff;
-    background: rgba(180,120,255,0.15);
-    box-shadow: 0 0 12px rgba(180,120,255,0.3);
-  }
-
-  /* ── CAMERA PERMISSION MODAL ── */
-  #camera-modal {
-    position: fixed; inset: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    opacity: 0;
-    animation: modalFadeIn 0.6s ease 0.4s forwards;
-  }
-
-  @keyframes modalFadeIn {
-    to { opacity: 1; }
-  }
-
-  #camera-modal.hiding {
-    animation: modalFadeOut 0.5s ease forwards;
-  }
-
-  @keyframes modalFadeOut {
-    to { opacity: 0; pointer-events: none; }
-  }
-
-  #modal-card {
-    position: relative;
-    width: min(480px, 90vw);
-    padding: 48px 44px 40px;
-    border-radius: 20px;
-    border: 1px solid rgba(196,160,255,0.25);
-    background: linear-gradient(145deg, rgba(20,10,35,0.95), rgba(5,5,20,0.98));
-    box-shadow:
-      0 0 0 1px rgba(196,160,255,0.08),
-      0 30px 80px rgba(0,0,0,0.7),
-      0 0 60px rgba(130,80,255,0.12) inset;
-    transform: translateY(20px);
-    animation: cardRise 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;
-  }
-
-  @keyframes cardRise {
-    from { transform: translateY(24px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-
-  #modal-glow {
-    position: absolute;
-    top: -60px; left: 50%;
-    transform: translateX(-50%);
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(180,120,255,0.35) 0%, transparent 70%);
-    pointer-events: none;
-    animation: glowPulse 3s ease-in-out infinite;
-  }
-
-  @keyframes glowPulse {
-    0%,100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-    50%      { opacity: 1;   transform: translateX(-50%) scale(1.15); }
-  }
-
-  #modal-icon {
-    font-size: 48px;
-    text-align: center;
-    margin-bottom: 20px;
-    display: block;
-    filter: drop-shadow(0 0 16px rgba(196,160,255,0.7));
-    animation: iconFloat 4s ease-in-out infinite;
-  }
-
-  @keyframes iconFloat {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-5px); }
-  }
-
-  #modal-title {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 26px;
-    text-align: center;
-    letter-spacing: 0.04em;
-    background: linear-gradient(135deg, #e0c8ff, #a0d8ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-  }
-
-  #modal-subtitle {
-    font-size: 8px;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    text-align: center;
-    opacity: 0.35;
-    margin-bottom: 28px;
-  }
-
-  #modal-divider {
-    width: 40px; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(196,160,255,0.5), transparent);
-    margin: 0 auto 28px;
-  }
-
-  #modal-body {
-    font-size: 11px;
-    line-height: 1.85;
-    opacity: 0.6;
-    text-align: center;
-    letter-spacing: 0.04em;
-    margin-bottom: 32px;
-  }
-
-  #modal-features {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-  }
-
-  .modal-feature {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .modal-feature-icon {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    border: 1px solid rgba(196,160,255,0.2);
-    background: rgba(180,120,255,0.08);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-
-  .modal-feature-label {
-    font-size: 7px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0.4;
-    text-align: center;
-  }
-
-  #modal-btn-allow {
-    display: block;
-    width: 100%;
-    padding: 14px 0;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #9060e0, #5090e0);
-    color: #fff;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 4px 24px rgba(130,80,255,0.4);
-    margin-bottom: 12px;
-  }
-
-  #modal-btn-allow::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  #modal-btn-allow:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(130,80,255,0.6);
-  }
-
-  #modal-btn-allow:hover::before { opacity: 1; }
-  #modal-btn-allow:active { transform: translateY(0); }
-
-  #modal-btn-skip {
-    display: block;
-    width: 100%;
-    padding: 10px 0;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    background: transparent;
-    color: rgba(255,255,255,0.35);
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  #modal-btn-skip:hover {
-    border-color: rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.6);
-    background: rgba(255,255,255,0.04);
-  }
-
-  #modal-privacy {
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    opacity: 0.25;
-    text-align: center;
-    margin-top: 20px;
-    line-height: 1.7;
-  }
-
-  /* Denied state */
-  #modal-denied {
-    display: none;
-    text-align: center;
-  }
-
-  #modal-denied-icon {
-    font-size: 36px;
-    display: block;
-    margin-bottom: 14px;
-    opacity: 0.6;
-  }
-
-  #modal-denied-text {
-    font-size: 10px;
-    opacity: 0.45;
-    line-height: 1.8;
-    letter-spacing: 0.05em;
-    margin-bottom: 20px;
-  }
-
-  #modal-denied-continue {
-    display: inline-block;
-    padding: 10px 28px;
-    border: 1px solid rgba(196,160,255,0.3);
-    border-radius: 8px;
-    background: transparent;
-    color: rgba(196,160,255,0.7);
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  #modal-denied-continue:hover {
-    background: rgba(196,160,255,0.08);
-    border-color: rgba(196,160,255,0.5);
-  }
-
-  #templates-bar {
-    position: fixed;
-    top: 70px; left: 0; right: 0;
-    z-index: 20;
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    pointer-events: none;
-  }
-
-  #expand-meter {
-    position: fixed;
-    left: 28px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-
-  #meter-label {
-    font-size: 8px;
-    letter-spacing: 0.25em;
-    opacity: 0.25;
-    text-transform: uppercase;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-  }
-
-  #meter-track {
-    width: 2px;
-    height: 80px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #meter-fill {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: linear-gradient(0deg, #c4a0ff, #80d0ff);
-    border-radius: 2px;
-    transition: height 0.1s ease;
-    box-shadow: 0 0 8px rgba(180,120,255,0.6);
-  }
+/* ── CAMERA MODAL ── */
+#camera-modal{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);opacity:0;animation:fadeIn 0.5s ease 0.3s forwards;}
+@keyframes fadeIn{to{opacity:1}}
+#camera-modal.hiding{animation:fadeOut 0.4s ease forwards;}
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+#modal-card{position:relative;width:min(480px,90vw);padding:48px 44px 40px;border-radius:20px;border:1px solid var(--panel-border);background:linear-gradient(145deg,rgba(18,10,32,0.97),rgba(5,3,18,0.99));box-shadow:0 0 0 1px rgba(180,140,255,0.06),0 40px 80px rgba(0,0,0,0.7),0 0 60px rgba(130,80,255,0.1) inset;animation:cardRise 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both;}
+@keyframes cardRise{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+#modal-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(180,140,255,0.3) 0%,transparent 70%);pointer-events:none;animation:glowPulse 3s ease-in-out infinite;}
+@keyframes glowPulse{0%,100%{opacity:0.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.15)}}
+#modal-icon{font-size:48px;text-align:center;margin-bottom:20px;display:block;animation:iconFloat 4s ease-in-out infinite;}
+@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#modal-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+#modal-subtitle{font-size:8px;letter-spacing:0.35em;text-transform:uppercase;text-align:center;opacity:0.3;margin-bottom:26px;}
+#modal-divider{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,255,0.4),transparent);margin:0 auto 26px;}
+#modal-body{font-size:11px;line-height:1.85;opacity:0.55;text-align:center;letter-spacing:0.04em;margin-bottom:28px;}
+#modal-features{display:flex;justify-content:center;gap:18px;margin-bottom:32px;flex-wrap:wrap;}
+.modal-feature{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.modal-feature-icon{width:40px;height:40px;border-radius:10px;border:1px solid var(--panel-border);background:rgba(180,140,255,0.07);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.modal-feature-label{font-size:7px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.38;text-align:center;}
+#modal-btn-allow{display:block;width:100%;padding:14px 0;border:none;border-radius:12px;background:linear-gradient(135deg,#7040d0,#4080d0);color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 24px rgba(120,70,255,0.4);margin-bottom:10px;}
+#modal-btn-allow:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(120,70,255,0.6);}
+#modal-btn-allow:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+#modal-btn-skip{display:block;width:100%;padding:10px 0;border:1px solid rgba(255,255,255,0.1);border-radius:10px;background:transparent;color:rgba(255,255,255,0.32);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+#modal-btn-skip:hover{border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);}
+#modal-btn-skip:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+#modal-privacy{font-size:8px;letter-spacing:0.1em;opacity:0.2;text-align:center;margin-top:18px;line-height:1.7;}
+#modal-denied{display:none;text-align:center;}
+#modal-denied-icon{font-size:36px;display:block;margin-bottom:14px;opacity:0.5;}
+#modal-denied-text{font-size:10px;opacity:0.4;line-height:1.85;margin-bottom:20px;}
+#modal-denied-continue{display:inline-block;padding:10px 28px;border:1px solid var(--panel-border);border-radius:var(--radius-sm);background:transparent;color:rgba(180,140,255,0.7);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+#modal-denied-continue:hover{background:rgba(180,140,255,0.08);}
+#modal-denied-continue:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 </style>
 </head>
 <body>
 
-<div id="loading-screen">
+<a id="skip-link" href="#ctrl-panel">Skip to controls</a>
+<div id="a11y-live" aria-live="polite" aria-atomic="true" role="status"></div>
+
+<div id="loading-screen" role="progressbar" aria-label="Loading Particle Cosmos">
   <div id="loading-title">Particle Cosmos</div>
-  <div id="loading-sub">gesture-controlled universe</div>
+  <div id="loading-sub">gesture-driven universe</div>
   <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
-  <div id="loading-text">Initializing systems...</div>
+  <div id="loading-text">Initializing…</div>
 </div>
 
-<!-- ── CAMERA PERMISSION MODAL ── -->
-<div id="camera-modal">
+<div id="camera-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-text">
   <div id="modal-card">
     <div id="modal-glow"></div>
-    <span id="modal-icon">📷</span>
-    <div id="modal-title">Allow Camera Access</div>
-    <div id="modal-subtitle">for hand gesture control</div>
-    <div id="modal-divider"></div>
+    <span id="modal-icon" role="img" aria-label="Camera">📷</span>
+    <div id="modal-title-text" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">Allow Camera Access</div>
+    <div id="modal-subtitle" style="font-size:8px;letter-spacing:0.35em;text-transform:uppercase;text-align:center;opacity:0.3;margin-bottom:26px;">for hand gesture control</div>
+    <div id="modal-divider" style="width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,255,0.4),transparent);margin:0 auto 26px;"></div>
     <div id="modal-default">
-      <div id="modal-body">
-        Your camera is used locally to detect hand gestures in real time.<br>
-        No footage is stored, recorded, or transmitted anywhere.
+      <div id="modal-body">Your camera is used locally to detect hand gestures in real time.<br>No footage is stored, recorded, or transmitted anywhere.</div>
+      <div id="modal-features" role="list">
+        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">🖐</div><div class="modal-feature-label">Expand</div></div>
+        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">✌️</div><div class="modal-feature-label">Switch</div></div>
+        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">☝️</div><div class="modal-feature-label">Burst</div></div>
+        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">🤌</div><div class="modal-feature-label">Rotate</div></div>
       </div>
-      <div id="modal-features">
-        <div class="modal-feature"><div class="modal-feature-icon">🖐</div><div class="modal-feature-label">Expand<br>particles</div></div>
-        <div class="modal-feature"><div class="modal-feature-icon">✌️</div><div class="modal-feature-label">Switch<br>templates</div></div>
-        <div class="modal-feature"><div class="modal-feature-icon">☝️</div><div class="modal-feature-label">Burst<br>emit</div></div>
-        <div class="modal-feature"><div class="modal-feature-icon">🤌</div><div class="modal-feature-label">Rotate<br>formation</div></div>
-      </div>
-      <button id="modal-btn-allow">✦ Enable Camera</button>
+      <button id="modal-btn-allow" autofocus>✦ Enable Camera</button>
       <button id="modal-btn-skip">Continue without camera</button>
-      <div id="modal-privacy">🔒 &nbsp;All processing happens on your device.<br>Camera feed never leaves your browser.</div>
+      <div id="modal-privacy" role="note">🔒 All processing is on-device. Camera feed never leaves your browser.</div>
     </div>
-    <div id="modal-denied">
+    <div id="modal-denied" role="alert">
       <span id="modal-denied-icon">🚫</span>
-      <div id="modal-denied-text">Camera access was denied.<br>You can still enjoy the particle cosmos<br>using keyboard and mouse controls.</div>
+      <div id="modal-denied-text">Camera access was denied.<br>You can still use the control panel, keyboard, and mouse.</div>
       <button id="modal-denied-continue">Continue anyway</button>
     </div>
   </div>
 </div>
 
 <div id="canvas-container"></div>
+<video id="webcam" autoplay muted playsinline aria-hidden="true"></video>
+<canvas id="hand-canvas" aria-hidden="true"></canvas>
+<div id="cam-label" aria-hidden="true">Hand Tracking</div>
 
-<video id="webcam" autoplay muted playsinline></video>
-<canvas id="hand-canvas"></canvas>
+<header id="topbar" role="banner">
+  <div id="brand">
+    <div id="brand-title">Particle Cosmos</div>
+    <div id="brand-sub">gesture-driven universe</div>
+  </div>
+  <div id="topbar-right">
+    <div id="gesture-badge" aria-live="polite" aria-label="Current gesture">✦ READY</div>
+    <div id="template-badge" aria-live="polite" aria-label="Current template">✦ NEBULA</div>
+  </div>
+</header>
 
-<div id="ui">
-  <div>
-    <div id="title">Particle Cosmos</div>
-    <div id="subtitle">gesture-driven universe</div>
+<nav id="templates-bar" aria-label="Particle templates" role="tablist">
+  <button class="tpill active" data-t="0" role="tab" aria-selected="true">✦ Nebula</button>
+  <button class="tpill" data-t="1" role="tab" aria-selected="false">♥ Heart</button>
+  <button class="tpill" data-t="2" role="tab" aria-selected="false">✿ Flower</button>
+  <button class="tpill" data-t="3" role="tab" aria-selected="false">♄ Saturn</button>
+  <button class="tpill" data-t="4" role="tab" aria-selected="false">✸ Fireworks</button>
+  <button class="tpill" data-t="5" role="tab" aria-selected="false">⬡ DNA</button>
+  <button class="tpill" data-t="6" role="tab" aria-selected="false">⊛ Galaxy</button>
+  <button class="tpill" data-t="7" role="tab" aria-selected="false">◎ Vortex</button>
+</nav>
+
+<aside id="ctrl-panel" role="complementary" aria-label="Particle controls">
+  <div id="ctrl-panel-header">
+    <div id="ctrl-panel-title">Controls</div>
+    <button id="ctrl-toggle" aria-label="Toggle control panel" aria-expanded="true" title="Toggle (T)">‹</button>
   </div>
-  <div id="status-panel">
-    <div id="gesture-display">✦ SCANNING HANDS ✦</div>
-    <div id="template-display">NEBULA</div>
+  <div id="ctrl-body">
+
+    <div class="ctrl-section">
+      <div class="ctrl-section-label">Particle Behaviour</div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-expand">Expansion</label><span class="ctrl-value" id="val-expand">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-expand" min="0.3" max="2.5" step="0.01" value="1.0" aria-label="Expansion factor">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-speed">Animation Speed</label><span class="ctrl-value" id="val-speed">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-speed" min="0.1" max="4.0" step="0.05" value="1.0" aria-label="Animation speed">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-spread">Shape Scale</label><span class="ctrl-value" id="val-spread">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-spread" min="0.2" max="3.0" step="0.05" value="1.0" aria-label="Shape scale">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-size">Particle Size</label><span class="ctrl-value" id="val-size">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-size" min="0.2" max="4.0" step="0.05" value="1.0" aria-label="Particle size">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-opacity">Brightness</label><span class="ctrl-value" id="val-opacity">0.90</span></div>
+        <input type="range" class="ctrl-slider" id="sl-opacity" min="0.1" max="1.5" step="0.05" value="0.9" aria-label="Brightness">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-turbulence">Turbulence</label><span class="ctrl-value" id="val-turbulence">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-turbulence" min="0" max="5.0" step="0.1" value="1.0" aria-label="Turbulence intensity">
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-section-label">Rotation</div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-rot-x">Tilt X</label><span class="ctrl-value" id="val-rot-x">0°</span></div>
+        <input type="range" class="ctrl-slider" id="sl-rot-x" min="-180" max="180" step="1" value="0" aria-label="Rotation X">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-rot-y">Spin Y</label><span class="ctrl-value" id="val-rot-y">0°</span></div>
+        <input type="range" class="ctrl-slider" id="sl-rot-y" min="-180" max="180" step="1" value="0" aria-label="Rotation Y">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-rot-speed">Auto-spin Speed</label><span class="ctrl-value" id="val-rot-speed">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-rot-speed" min="0" max="5.0" step="0.1" value="1.0" aria-label="Auto-spin speed">
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-section-label">Colour</div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-hue">Hue Shift</label><span class="ctrl-value" id="val-hue">0°</span></div>
+        <input type="range" class="ctrl-slider" id="sl-hue" min="0" max="360" step="1" value="0" aria-label="Hue shift">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-saturation">Saturation</label><span class="ctrl-value" id="val-saturation">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-saturation" min="0" max="2.0" step="0.05" value="1.0" aria-label="Colour saturation">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label">Colour Presets</label></div>
+        <div class="palette-row" role="group" aria-label="Colour presets">
+          <button class="palette-btn active" style="background:linear-gradient(135deg,#b48cff,#6dd5ff)" data-palette="0" aria-label="Cosmic" title="Cosmic"></button>
+          <button class="palette-btn" style="background:linear-gradient(135deg,#ff6090,#ffb060)" data-palette="1" aria-label="Sunset" title="Sunset"></button>
+          <button class="palette-btn" style="background:linear-gradient(135deg,#40ffa0,#40d0ff)" data-palette="2" aria-label="Aurora" title="Aurora"></button>
+          <button class="palette-btn" style="background:linear-gradient(135deg,#ff4060,#ff0080)" data-palette="3" aria-label="Crimson" title="Crimson"></button>
+          <button class="palette-btn" style="background:linear-gradient(135deg,#ffff60,#ff8040)" data-palette="4" aria-label="Solar" title="Solar"></button>
+          <button class="palette-btn" style="background:linear-gradient(135deg,#ffffff,#aaaaaa)" data-palette="5" aria-label="Mono" title="Mono"></button>
+        </div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-row-header"><label class="ctrl-label" for="sl-color-speed">Colour Cycle</label><span class="ctrl-value" id="val-color-speed">1.00</span></div>
+        <input type="range" class="ctrl-slider" id="sl-color-speed" min="0" max="5.0" step="0.1" value="1.0" aria-label="Colour cycle speed">
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-section-label">Options</div>
+      <div class="toggle-row"><span class="toggle-label">Auto-rotate</span><div class="toggle-switch on" id="tog-autorotate" role="switch" aria-checked="true" aria-label="Auto-rotate" tabindex="0"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Camera sway</span><div class="toggle-switch on" id="tog-sway" role="switch" aria-checked="true" aria-label="Camera sway" tabindex="0"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Idle turbulence</span><div class="toggle-switch on" id="tog-idle-turb" role="switch" aria-checked="true" aria-label="Idle turbulence" tabindex="0"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Hand skeleton</span><div class="toggle-switch on" id="tog-skeleton" role="switch" aria-checked="true" aria-label="Show hand skeleton" tabindex="0"></div></div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-section-label">Actions</div>
+      <div class="ctrl-btn-row">
+        <button class="ctrl-btn" id="btn-burst" aria-label="Trigger particle burst">⚡ Burst</button>
+        <button class="ctrl-btn" id="btn-reset-rot" aria-label="Reset rotation">↺ Rot</button>
+      </div>
+      <div class="ctrl-btn-row">
+        <button class="ctrl-btn" id="btn-prev" aria-label="Previous template">← Prev</button>
+        <button class="ctrl-btn" id="btn-next" aria-label="Next template">Next →</button>
+      </div>
+      <div class="ctrl-btn-row">
+        <button class="ctrl-btn" id="btn-help" aria-label="Show keyboard shortcuts">? Help</button>
+        <button class="ctrl-btn danger" id="btn-reset-all" aria-label="Reset all settings">⊘ Reset</button>
+      </div>
+    </div>
+
   </div>
+</aside>
+
+
+<!-- Gesture flash overlay -->
+<div id="gesture-flash" aria-hidden="true"><div id="gesture-flash-inner">✦</div></div>
+
+<!-- Gesture guide sidebar -->
+<div id="gesture-guide" aria-hidden="true">
+  <div class="gg-row" id="gg-open">   <span class="gg-icon">🖐</span><span class="gg-desc">Open — Expand</span></div>
+  <div class="gg-row" id="gg-fist">   <span class="gg-icon">✊</span><span class="gg-desc">Fist — Contract</span></div>
+  <div class="gg-divider"></div>
+  <div class="gg-row" id="gg-peace">  <span class="gg-icon">✌️</span><span class="gg-desc">Peace — Next shape</span></div>
+  <div class="gg-row" id="gg-three">  <span class="gg-icon">🤟</span><span class="gg-desc">Three — Prev shape</span></div>
+  <div class="gg-divider"></div>
+  <div class="gg-row" id="gg-point">  <span class="gg-icon">☝️</span><span class="gg-desc">Point — Burst</span></div>
+  <div class="gg-row" id="gg-pinch">  <span class="gg-icon">🤌</span><span class="gg-desc">Pinch — Rotate</span></div>
+  <div class="gg-divider"></div>
+  <div class="gg-row" id="gg-horns">  <span class="gg-icon">🤘</span><span class="gg-desc">Horns — Speed up</span></div>
+  <div class="gg-row" id="gg-ok">     <span class="gg-icon">👌</span><span class="gg-desc">OK — Slow down</span></div>
+  <div class="gg-divider"></div>
+  <div class="gg-row" id="gg-call">   <span class="gg-icon">🤙</span><span class="gg-desc">Call me — Palette+</span></div>
+  <div class="gg-row" id="gg-four">   <span class="gg-icon">🖖</span><span class="gg-desc">Vulcan — Palette−</span></div>
+  <div class="gg-divider"></div>
+  <div class="gg-row" id="gg-tilt">   <span class="gg-icon">↕️</span><span class="gg-desc">Tilt wrist — Size</span></div>
+  <div class="gg-row" id="gg-swipe">  <span class="gg-icon">👋</span><span class="gg-desc">Wave — Reset rot</span></div>
 </div>
 
-<div id="templates-bar">
-  <div class="template-pill active" data-t="0">Nebula</div>
-  <div class="template-pill" data-t="1">Heart</div>
-  <div class="template-pill" data-t="2">Flower</div>
-  <div class="template-pill" data-t="3">Saturn</div>
-  <div class="template-pill" data-t="4">Fireworks</div>
-  <div class="template-pill" data-t="5">DNA</div>
-  <div class="template-pill" data-t="6">Galaxy</div>
-  <div class="template-pill" data-t="7">Vortex</div>
+<!-- Wrist tilt meter -->
+<div id="tilt-meter" aria-hidden="true">
+  <canvas id="tilt-arc" width="60" height="34"></canvas>
+  <div id="tilt-label">TILT</div>
 </div>
 
-<div id="expand-meter">
-  <div id="meter-track"><div id="meter-fill" style="height:0%"></div></div>
+<div id="expand-meter" aria-hidden="true">
+  <div id="meter-track"><div id="meter-fill" style="height:30%"></div></div>
   <div id="meter-label">EXPAND</div>
 </div>
 
-<div id="particle-count">
-  <div id="count-value">0</div>
-  <div id="count-label">particles</div>
+<div id="stats-bar" role="status" aria-label="Particle statistics">
+  <div class="stat-item"><div class="stat-val" id="stat-particles">12,000</div><span class="stat-key">Particles</span></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-val" id="stat-fps">—</div><span class="stat-key">FPS</span></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-val" id="stat-expand">1.00×</div><span class="stat-key">Expand</span></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-val" id="stat-template">NEBULA</div><span class="stat-key">Shape</span></div>
 </div>
 
-<div id="controls-hint">
-  <div class="hint-row"><span class="hint-key">OPEN HAND</span> expand / enlarge</div>
-  <div class="hint-row"><span class="hint-key">FIST</span> contract / shrink</div>
-  <div class="hint-row"><span class="hint-key">PINCH</span> rotate focus</div>
-  <div class="hint-row"><span class="hint-key">PEACE ✌</span> next template</div>
-  <div class="hint-row"><span class="hint-key">POINT ☝</span> emit burst</div>
-  <div class="hint-row"><span class="hint-key">← →</span> cycle templates</div>
+<div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+<div id="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title">
+  <div id="help-card">
+    <h2 id="help-title">Keyboard Shortcuts</h2>
+    <div class="help-sub">All controls at a glance</div>
+    <div class="help-grid" role="list">
+      <div class="help-row" role="listitem"><span class="help-key">← →</span><span class="help-desc">Cycle templates</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">1 – 8</span><span class="help-desc">Jump to template</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">Space</span><span class="help-desc">Toggle expand</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">B</span><span class="help-desc">Trigger burst</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">R</span><span class="help-desc">Reset rotation</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">A</span><span class="help-desc">Toggle auto-rotate</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">T</span><span class="help-desc">Toggle control panel</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">H / ?</span><span class="help-desc">This help screen</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">+ / –</span><span class="help-desc">Zoom in / out</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">Scroll</span><span class="help-desc">Adjust expansion</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">Drag</span><span class="help-desc">Rotate formation</span></div>
+      <div class="help-row" role="listitem"><span class="help-key">Esc</span><span class="help-desc">Close overlays</span></div>
+    </div>
+    <div style="margin-bottom:22px;font-size:9px;opacity:0.3;letter-spacing:0.08em;text-align:center;line-height:1.9;">
+      🖐 Expand &nbsp; ✊ Contract &nbsp; ✌️ Next shape &nbsp; 🤟 Prev shape &nbsp; ☝️ Burst &nbsp; 🤌 Rotate &nbsp; 🤘 Speed+ &nbsp; 👌 Speed− &nbsp; 🤙 Palette+ &nbsp; 🖖 Palette− &nbsp; ↕️ Tilt→Size &nbsp; 👋 Reset
+    </div>
+    <button id="help-close">Close</button>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ─────────────────────────────────────────────
-// PARTICLE COSMOS  —  Three.js + MediaPipe Hands
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════
+//  PARTICLE COSMOS — Enhanced Edition
+// ═══════════════════════════════════════════
+const NP = 12000;
 
 const TEMPLATES = [
-  { name: 'NEBULA',    emoji: '✦', color1: [0.8,0.5,1.0], color2: [0.3,0.7,1.0] },
-  { name: 'HEART',     emoji: '♥', color1: [1.0,0.3,0.5], color2: [1.0,0.7,0.2] },
-  { name: 'FLOWER',    emoji: '✿', color1: [1.0,0.6,0.8], color2: [0.5,1.0,0.5] },
-  { name: 'SATURN',    emoji: '♄', color1: [1.0,0.8,0.4], color2: [0.8,0.6,1.0] },
-  { name: 'FIREWORKS', emoji: '✸', color1: [1.0,0.9,0.2], color2: [1.0,0.3,0.3] },
-  { name: 'DNA',       emoji: '⬡', color1: [0.2,1.0,0.8], color2: [0.2,0.4,1.0] },
-  { name: 'GALAXY',    emoji: '⊛', color1: [0.6,0.3,1.0], color2: [0.1,0.5,1.0] },
-  { name: 'VORTEX',    emoji: '◎', color1: [0.0,1.0,0.9], color2: [0.5,0.0,1.0] },
+  {name:'NEBULA',    label:'✦ Nebula',    c1:[0.75,0.50,1.00], c2:[0.28,0.72,1.00]},
+  {name:'HEART',     label:'♥ Heart',     c1:[1.00,0.28,0.50], c2:[1.00,0.72,0.22]},
+  {name:'FLOWER',    label:'✿ Flower',    c1:[1.00,0.58,0.80], c2:[0.48,1.00,0.48]},
+  {name:'SATURN',    label:'♄ Saturn',    c1:[1.00,0.82,0.40], c2:[0.78,0.58,1.00]},
+  {name:'FIREWORKS', label:'✸ Fireworks', c1:[1.00,0.90,0.22], c2:[1.00,0.30,0.30]},
+  {name:'DNA',       label:'⬡ DNA',       c1:[0.18,1.00,0.80], c2:[0.18,0.40,1.00]},
+  {name:'GALAXY',    label:'⊛ Galaxy',    c1:[0.60,0.28,1.00], c2:[0.10,0.50,1.00]},
+  {name:'VORTEX',    label:'◎ Vortex',    c1:[0.00,1.00,0.90], c2:[0.50,0.00,1.00]},
 ];
 
-const NUM_PARTICLES = 12000;
-let currentTemplate = 0;
-let expandFactor = 1.0;
-let targetExpand  = 1.0;
-let rotateFactor  = 0.0;
-let gestureState  = 'none';
-let burstCooldown = 0;
-let transitionT   = 1.0; // 0=transitioning, 1=done
-let targetPositions = new Float32Array(NUM_PARTICLES * 3);
-let startPositions  = new Float32Array(NUM_PARTICLES * 3);
-let colorShift = 0;
-let handX = 0.5, handY = 0.5;
-let handPresent = false;
-let autoRotate = true;
+const PALETTES = [
+  null,
+  {c1:[1.0,0.38,0.56],c2:[1.0,0.70,0.38]},
+  {c1:[0.25,1.0,0.63],c2:[0.25,0.82,1.0]},
+  {c1:[1.0,0.25,0.38],c2:[1.0,0.0,0.50]},
+  {c1:[1.0,1.0,0.38], c2:[1.0,0.50,0.25]},
+  {c1:[1.0,1.0,1.0],  c2:[0.65,0.65,0.65]},
+];
 
-// ── THREE SETUP ──────────────────────────────
-const container = document.getElementById('canvas-container');
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000, 1);
-container.appendChild(renderer.domElement);
+// ── State ────────────────────────────────────
+let currentTemplate=0, expandFactor=1.0, targetExpand=1.0, transitionT=1.0, colorShift=0;
+let handX=0.5, handY=0.5, handPresent=false;
+const S={speed:1.0,spread:1.0,particleSize:1.0,brightness:0.9,turbulence:1.0,rotSpeed:1.0,hueShift:0,saturation:1.0,colorCycleSpeed:1.0,autoRotate:true,cameraSway:true,idleTurbulence:true,showSkeleton:true,activePalette:0};
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0, 28);
+// ── Renderer ─────────────────────────────────
+const cont=document.getElementById('canvas-container');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000,1);
+cont.appendChild(renderer.domElement);
 
-// Post-process glow via additive blending on particles
-const geometry = new THREE.BufferGeometry();
-const positions  = new Float32Array(NUM_PARTICLES * 3);
-const colors     = new Float32Array(NUM_PARTICLES * 3);
-const sizes      = new Float32Array(NUM_PARTICLES);
-const velocities = new Float32Array(NUM_PARTICLES * 3);
-const phases     = new Float32Array(NUM_PARTICLES);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,1000);
+cam.position.set(0,0,28);
 
-for (let i = 0; i < NUM_PARTICLES; i++) {
-  phases[i] = Math.random() * Math.PI * 2;
-  sizes[i]  = Math.random() * 2.5 + 0.5;
-}
+// ── Buffers ──────────────────────────────────
+const geo=new THREE.BufferGeometry();
+const pos=new Float32Array(NP*3), aCol=new Float32Array(NP*3), szs=new Float32Array(NP);
+const vel=new Float32Array(NP*3), phi=new Float32Array(NP);
+const tgt=new Float32Array(NP*3), src=new Float32Array(NP*3);
+for(let i=0;i<NP;i++){phi[i]=Math.random()*Math.PI*2; szs[i]=Math.random()*2.5+0.5;}
+geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+geo.setAttribute('aColor',  new THREE.BufferAttribute(aCol,3));
+geo.setAttribute('size',    new THREE.BufferAttribute(szs,1));
 
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute('aColor',   new THREE.BufferAttribute(colors, 3));
-geometry.setAttribute('size',     new THREE.BufferAttribute(sizes, 1));
-
-// Custom shader for glowing particles
-const vertexShader = `
-  attribute float size;
-  attribute vec3 aColor;
-  varying vec3 vColor;
-  varying float vAlpha;
-  uniform float uTime;
-  uniform float uExpand;
-  void main() {
-    vColor = aColor;
-    vec4 mvPosition = modelViewMatrix * vec4(position * uExpand, 1.0);
-    vAlpha = clamp(1.2 - length(mvPosition.xyz) / 40.0, 0.0, 1.0);
-    gl_PointSize = size * (280.0 / -mvPosition.z);
-    gl_Position = projectionMatrix * mvPosition;
-  }
-`;
-
-const fragmentShader = `
-  varying vec3 vColor;
-  varying float vAlpha;
-  void main() {
-    vec2 uv = gl_PointCoord - vec2(0.5);
-    float d = length(uv);
-    if (d > 0.5) discard;
-    float alpha = smoothstep(0.5, 0.0, d) * vAlpha;
-    float glow  = exp(-d * 5.0) * 0.6;
-    gl_FragColor = vec4(vColor + glow, alpha * 0.9);
-  }
-`;
-
-const material = new THREE.ShaderMaterial({
-  uniforms: {
-    uTime:   { value: 0 },
-    uExpand: { value: 1 },
-  },
-  vertexShader, fragmentShader,
-  blending:     THREE.AdditiveBlending,
-  depthWrite:   false,
-  transparent:  true,
+const mat=new THREE.ShaderMaterial({
+  uniforms:{uExpand:{value:1},uBright:{value:0.9},uSzMult:{value:1}},
+  vertexShader:`
+    attribute float size; attribute vec3 aColor;
+    varying vec3 vC; varying float vA;
+    uniform float uExpand,uBright,uSzMult;
+    void main(){
+      vC=aColor*uBright;
+      vec4 mv=modelViewMatrix*vec4(position*uExpand,1.0);
+      vA=clamp(1.2-length(mv.xyz)/42.0,0.0,1.0);
+      gl_PointSize=size*uSzMult*(290.0/-mv.z);
+      gl_Position=projectionMatrix*mv;
+    }`,
+  fragmentShader:`
+    varying vec3 vC; varying float vA;
+    void main(){
+      vec2 uv=gl_PointCoord-vec2(0.5); float d=length(uv);
+      if(d>0.5) discard;
+      float a=smoothstep(0.5,0.0,d)*vA;
+      float g=exp(-d*5.0)*0.55;
+      gl_FragColor=vec4(vC+g,a*0.92);
+    }`,
+  blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,
 });
 
-const particles = new THREE.Points(geometry, material);
-scene.add(particles);
+const pts=new THREE.Points(geo,mat);
+scene.add(pts);
 
-// Ambient star field
-const starGeo = new THREE.BufferGeometry();
-const starPos = new Float32Array(2000 * 3);
-for (let i = 0; i < 2000; i++) {
-  starPos[i*3]   = (Math.random()-0.5)*200;
-  starPos[i*3+1] = (Math.random()-0.5)*200;
-  starPos[i*3+2] = (Math.random()-0.5)*200;
+// Stars
+const sg=new THREE.BufferGeometry(), sp=new Float32Array(2000*3);
+for(let i=0;i<2000;i++){sp[i*3]=(Math.random()-0.5)*220;sp[i*3+1]=(Math.random()-0.5)*220;sp[i*3+2]=(Math.random()-0.5)*220;}
+sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.14,transparent:true,opacity:0.22,blending:THREE.AdditiveBlending})));
+
+// ── Colour helpers ───────────────────────────
+function hsv2rgb(h,s,v){
+  h=((h%1)+1)%1; const i=Math.floor(h*6),f=h*6-i,p=v*(1-s),q=v*(1-f*s),t=v*(1-(1-f)*s);
+  switch(i%6){case 0:return[v,t,p];case 1:return[q,v,p];case 2:return[p,v,t];case 3:return[p,q,v];case 4:return[t,p,v];case 5:return[v,p,q];}
+  return[0,0,0];
 }
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-const starMat = new THREE.PointsMaterial({ color:0xffffff, size:0.15, transparent:true, opacity:0.3, blending:THREE.AdditiveBlending });
-scene.add(new THREE.Points(starGeo, starMat));
-
-// ── SHAPE GENERATORS ────────────────────────
-function generateNebula(out, i) {
-  const r = Math.pow(Math.random(), 0.4) * 12;
-  const th = Math.random() * Math.PI * 2;
-  const ph = Math.acos(2*Math.random()-1);
-  const cloud = (Math.random()-0.5)*3;
-  out[i*3]   = r*Math.sin(ph)*Math.cos(th) + cloud;
-  out[i*3+1] = r*Math.sin(ph)*Math.sin(th)*0.5 + cloud;
-  out[i*3+2] = r*Math.cos(ph) + cloud;
-}
-
-function generateHeart(out, i) {
-  const t = Math.random() * Math.PI * 2;
-  const s = Math.random() * 0.8 + 0.2;
-  const spread = (Math.random()-0.5)*0.8;
-  const x = 16*(Math.sin(t)**3);
-  const y = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
-  out[i*3]   = x*s*0.6 + spread;
-  out[i*3+1] = y*s*0.6 + spread;
-  out[i*3+2] = (Math.random()-0.5)*2;
-}
-
-function generateFlower(out, i) {
-  const t = Math.random() * Math.PI * 2;
-  const petals = 6;
-  const r = (Math.cos(petals*t)+1.5) * 3.5 * (0.6 + Math.random()*0.4);
-  const layer = (Math.random()-0.5)*1.5;
-  out[i*3]   = r*Math.cos(t);
-  out[i*3+1] = r*Math.sin(t);
-  out[i*3+2] = layer + Math.sin(t*petals)*0.8;
-}
-
-function generateSaturn(out, i) {
-  const which = Math.random();
-  if (which < 0.4) {
-    // sphere
-    const r = 4 + (Math.random()-0.5)*0.5;
-    const th = Math.random()*Math.PI*2;
-    const ph = Math.acos(2*Math.random()-1);
-    out[i*3]   = r*Math.sin(ph)*Math.cos(th);
-    out[i*3+1] = r*Math.sin(ph)*Math.sin(th);
-    out[i*3+2] = r*Math.cos(ph);
-  } else {
-    // rings
-    const angle = Math.random() * Math.PI * 2;
-    const ringR = 6 + Math.random()*5;
-    const tilt  = Math.sin(angle)*0.15;
-    out[i*3]   = ringR*Math.cos(angle);
-    out[i*3+1] = tilt + (Math.random()-0.5)*0.4;
-    out[i*3+2] = ringR*Math.sin(angle);
+function getCol(tidx,i,shift){
+  const pal=S.activePalette>0?PALETTES[S.activePalette]:null;
+  const c1=pal?pal.c1:TEMPLATES[tidx].c1, c2=pal?pal.c2:TEMPLATES[tidx].c2;
+  const m=(Math.sin(i*0.009+shift)+1)*0.5;
+  let r=c1[0]*m+c2[0]*(1-m), g=c1[1]*m+c2[1]*(1-m), b=c1[2]*m+c2[2]*(1-m);
+  if(S.hueShift||S.saturation!==1){
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+    let h=0,s=mx>0?d/mx:0,v=mx;
+    if(d>0){if(mx===r)h=((g-b)/d)/6;else if(mx===g)h=(2+(b-r)/d)/6;else h=(4+(r-g)/d)/6;}
+    [r,g,b]=hsv2rgb((h+S.hueShift/360)%1,Math.min(1,s*S.saturation),v);
   }
+  return[r,g,b];
+}
+function rebuildColors(){
+  for(let i=0;i<NP;i++){const c=getCol(currentTemplate,i,colorShift);aCol[i*3]=c[0];aCol[i*3+1]=c[1];aCol[i*3+2]=c[2];}
+  geo.attributes.aColor.needsUpdate=true;
 }
 
-function generateFireworks(out, i) {
-  const burst = Math.floor(Math.random()*8);
-  const cx = (Math.cos(burst/8*Math.PI*2))*6;
-  const cy = (Math.sin(burst/8*Math.PI*2))*4;
-  const cz = (Math.random()-0.5)*4;
-  const r  = Math.pow(Math.random(),0.5)*5;
-  const th = Math.random()*Math.PI*2;
-  const ph = Math.acos(2*Math.random()-1);
-  out[i*3]   = cx + r*Math.sin(ph)*Math.cos(th);
-  out[i*3+1] = cy + r*Math.sin(ph)*Math.sin(th);
-  out[i*3+2] = cz + r*Math.cos(ph);
+// ── Shape generators ─────────────────────────
+function genNebula(o,i){const r=Math.pow(Math.random(),0.4)*12*S.spread,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),cl=(Math.random()-0.5)*3;o[i*3]=r*Math.sin(ph)*Math.cos(th)+cl;o[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.5+cl;o[i*3+2]=r*Math.cos(ph)+cl;}
+function genHeart(o,i){const t=Math.random()*Math.PI*2,s=Math.random()*0.8+0.2,sp=(Math.random()-0.5)*0.8;const x=16*Math.pow(Math.sin(t),3),y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);o[i*3]=x*s*0.6*S.spread+sp;o[i*3+1]=y*s*0.6*S.spread+sp;o[i*3+2]=(Math.random()-0.5)*2;}
+function genFlower(o,i){const t=Math.random()*Math.PI*2,p=6,r=(Math.cos(p*t)+1.5)*3.5*(0.6+Math.random()*0.4)*S.spread;o[i*3]=r*Math.cos(t);o[i*3+1]=r*Math.sin(t);o[i*3+2]=(Math.random()-0.5)*1.5+Math.sin(t*p)*0.8;}
+function genSaturn(o,i){if(Math.random()<0.4){const r=(4+(Math.random()-0.5)*0.5)*S.spread,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);o[i*3]=r*Math.sin(ph)*Math.cos(th);o[i*3+1]=r*Math.sin(ph)*Math.sin(th);o[i*3+2]=r*Math.cos(ph);}else{const a=Math.random()*Math.PI*2,r=(6+Math.random()*5)*S.spread;o[i*3]=r*Math.cos(a);o[i*3+1]=Math.sin(a)*0.15+(Math.random()-0.5)*0.4;o[i*3+2]=r*Math.sin(a);}}
+function genFW(o,i){const b=Math.floor(Math.random()*8),cx=Math.cos(b/8*Math.PI*2)*6*S.spread,cy=Math.sin(b/8*Math.PI*2)*4*S.spread,r=Math.pow(Math.random(),0.5)*5*S.spread,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);o[i*3]=cx+r*Math.sin(ph)*Math.cos(th);o[i*3+1]=cy+r*Math.sin(ph)*Math.sin(th);o[i*3+2]=(Math.random()-0.5)*4+r*Math.cos(ph);}
+function genDNA(o,i){const t=(i/NP)*Math.PI*20+Math.random()*0.3,st=Math.random()<0.5?0:Math.PI,r=3*S.spread;o[i*3]=r*Math.cos(t+st)+(Math.random()-0.5)*0.5;o[i*3+1]=t*0.6*S.spread-9+(Math.random()-0.5)*0.5;o[i*3+2]=r*Math.sin(t+st)+(Math.random()-0.5)*0.5;}
+function genGalaxy(o,i){const a=3,ar=Math.floor(Math.random()*a),r=Math.pow(Math.random(),0.5)*12*S.spread,sp=r*0.35,ang=(ar/a)*Math.PI*2+sp+(Math.random()-0.5)*0.4;o[i*3]=r*Math.cos(ang);o[i*3+1]=(Math.random()-0.5)*Math.exp(-r*0.15)*0.5*2;o[i*3+2]=r*Math.sin(ang);}
+function genVortex(o,i){const t=Math.random()*Math.PI*8,r=t*0.5*(0.8+Math.random()*0.4)*S.spread;o[i*3]=r*Math.cos(t)*0.5;o[i*3+1]=(i/NP-0.5)*20*S.spread;o[i*3+2]=r*Math.sin(t)*0.5;}
+const gens=[genNebula,genHeart,genFlower,genSaturn,genFW,genDNA,genGalaxy,genVortex];
+
+function buildTemplate(idx){
+  for(let i=0;i<NP;i++){gens[idx](tgt,i);const c=getCol(idx,i,colorShift);aCol[i*3]=c[0];aCol[i*3+1]=c[1];aCol[i*3+2]=c[2];}
+  geo.attributes.aColor.needsUpdate=true;
 }
 
-function generateDNA(out, i) {
-  const t = (i/NUM_PARTICLES)*Math.PI*20 + Math.random()*0.3;
-  const strand = (Math.random() < 0.5) ? 0 : Math.PI;
-  const r = 3;
-  const spread = (Math.random()-0.5)*0.5;
-  out[i*3]   = r*Math.cos(t+strand) + spread;
-  out[i*3+1] = t*0.6 - 9 + spread;
-  out[i*3+2] = r*Math.sin(t+strand) + spread;
+function switchTemplate(idx,silent){
+  currentTemplate=((idx%TEMPLATES.length)+TEMPLATES.length)%TEMPLATES.length;
+  for(let i=0;i<NP*3;i++) src[i]=pos[i];
+  buildTemplate(currentTemplate); transitionT=0;
+  updateTemplateUI();
+  if(!silent) toast(TEMPLATES[currentTemplate].label);
+  announce('Template: '+TEMPLATES[currentTemplate].name);
 }
-
-function generateGalaxy(out, i) {
-  const arms = 3;
-  const arm  = Math.floor(Math.random()*arms);
-  const r    = Math.pow(Math.random(),0.5)*12;
-  const spin = r*0.35;
-  const angle= (arm/arms)*Math.PI*2 + spin + (Math.random()-0.5)*0.4;
-  const thickness = Math.exp(-r*0.15)*0.5;
-  out[i*3]   = r*Math.cos(angle);
-  out[i*3+1] = (Math.random()-0.5)*thickness*2;
-  out[i*3+2] = r*Math.sin(angle);
-}
-
-function generateVortex(out, i) {
-  const t = Math.random()*Math.PI*8;
-  const r = t*0.5*(0.8+Math.random()*0.4);
-  const z = (i/NUM_PARTICLES-0.5)*20;
-  out[i*3]   = r*Math.cos(t)*0.5;
-  out[i*3+1] = z;
-  out[i*3+2] = r*Math.sin(t)*0.5;
-}
-
-const generators = [
-  generateNebula, generateHeart, generateFlower, generateSaturn,
-  generateFireworks, generateDNA, generateGalaxy, generateVortex
-];
-
-function getColor(templateIdx, i) {
-  const t = TEMPLATES[templateIdx];
-  const mix = (Math.sin(i*0.01+colorShift)+1)*0.5;
-  return [
-    t.color1[0]*mix + t.color2[0]*(1-mix),
-    t.color1[1]*mix + t.color2[1]*(1-mix),
-    t.color1[2]*mix + t.color2[2]*(1-mix),
-  ];
-}
-
-function buildTemplate(idx) {
-  for (let i = 0; i < NUM_PARTICLES; i++) {
-    generators[idx](targetPositions, i);
-    const c = getColor(idx, i);
-    colors[i*3]   = c[0];
-    colors[i*3+1] = c[1];
-    colors[i*3+2] = c[2];
-  }
-  geometry.attributes.aColor.needsUpdate = true;
+function updateTemplateUI(){
+  const t=TEMPLATES[currentTemplate];
+  document.getElementById('template-badge').textContent=t.label;
+  document.getElementById('stat-template').textContent=t.name;
+  document.querySelectorAll('.tpill').forEach((p,i)=>{p.classList.toggle('active',i===currentTemplate);p.setAttribute('aria-selected',i===currentTemplate);});
 }
 
 // Init
 buildTemplate(0);
-for (let i = 0; i < NUM_PARTICLES*3; i++) {
-  positions[i] = targetPositions[i];
-  startPositions[i] = targetPositions[i];
+for(let i=0;i<NP*3;i++){pos[i]=tgt[i];src[i]=tgt[i];}
+
+// ── Burst ─────────────────────────────────────
+function triggerBurst(){
+  const px=(handX-0.5)*20,py=-(handY-0.5)*15;
+  for(let i=0;i<NP;i++){const dx=pos[i*3]-px,dy=pos[i*3+1]-py,dz=pos[i*3+2],d=Math.sqrt(dx*dx+dy*dy+dz*dz)||1,f=1.8/d;vel[i*3]+=dx/d*f;vel[i*3+1]+=dy/d*f;vel[i*3+2]+=dz/d*f*0.5;}
+  toast('⚡ Burst!');
 }
 
-function switchTemplate(idx) {
-  currentTemplate = ((idx % TEMPLATES.length) + TEMPLATES.length) % TEMPLATES.length;
-  for (let i = 0; i < NUM_PARTICLES*3; i++) startPositions[i] = positions[i];
-  buildTemplate(currentTemplate);
-  transitionT = 0;
+// ── Drag rotation ─────────────────────────────
+let drag=false,lmx=0,lmy=0;
+renderer.domElement.addEventListener('mousedown',e=>{drag=true;lmx=e.clientX;lmy=e.clientY;});
+window.addEventListener('mouseup',()=>drag=false);
+window.addEventListener('mousemove',e=>{
+  if(!handPresent){handX=e.clientX/innerWidth;handY=e.clientY/innerHeight;}
+  if(drag){
+    pts.rotation.y+=(e.clientX-lmx)*0.008;pts.rotation.x+=(e.clientY-lmy)*0.008;
+    lmx=e.clientX;lmy=e.clientY;
+    document.getElementById('sl-rot-x').value=THREE.MathUtils.radToDeg(pts.rotation.x)%360;
+    document.getElementById('sl-rot-y').value=THREE.MathUtils.radToDeg(pts.rotation.y)%360;
+    document.getElementById('val-rot-x').textContent=Math.round(THREE.MathUtils.radToDeg(pts.rotation.x)%360)+'°';
+    document.getElementById('val-rot-y').textContent=Math.round(THREE.MathUtils.radToDeg(pts.rotation.y)%360)+'°';
+  }
+});
+let ltx=0,lty=0;
+renderer.domElement.addEventListener('touchstart',e=>{ltx=e.touches[0].clientX;lty=e.touches[0].clientY;},{passive:true});
+renderer.domElement.addEventListener('touchmove',e=>{pts.rotation.y+=(e.touches[0].clientX-ltx)*0.01;pts.rotation.x+=(e.touches[0].clientY-lty)*0.01;ltx=e.touches[0].clientX;lty=e.touches[0].clientY;},{passive:true});
 
-  document.getElementById('template-display').textContent =
-    TEMPLATES[currentTemplate].emoji + ' ' + TEMPLATES[currentTemplate].name;
-  document.querySelectorAll('.template-pill').forEach((p,i) =>
-    p.classList.toggle('active', i===currentTemplate));
-}
+// ── MediaPipe ─────────────────────────────────
+let handsLib=null;
+const video=document.getElementById('webcam'),hc=document.getElementById('hand-canvas'),hctx=hc.getContext('2d');
+hc.width=160;hc.height=120;
 
-// ── MEDIAPIPE HANDS ──────────────────────────
-let handsReady = false;
-let handsLib   = null;
-const video  = document.getElementById('webcam');
-const hcanvas= document.getElementById('hand-canvas');
-const hctx   = hcanvas.getContext('2d');
+function dismissModal(){const m=document.getElementById('camera-modal');m.classList.add('hiding');setTimeout(()=>m.style.display='none',500);}
 
-hcanvas.width  = 180;
-hcanvas.height = 135;
-
-// ── MODAL LOGIC ─────────────────────────────
-function dismissModal() {
-  const modal = document.getElementById('camera-modal');
-  modal.classList.add('hiding');
-  setTimeout(() => { modal.style.display = 'none'; }, 500);
-}
-
-async function initCamera() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video:{width:320,height:240,facingMode:'user'} });
-    video.srcObject = stream;
-    await new Promise(r => { video.onloadedmetadata = r; });
-    video.play();
-    dismissModal();
-    loadMediaPipe();
-  } catch(e) {
-    console.log('Camera not available:', e);
-    gestureState = 'no-camera';
-    document.getElementById('gesture-display').textContent = '✦ NO CAMERA — USING AUTO ✦';
-    // Show denied state inside modal
-    document.getElementById('modal-default').style.display = 'none';
-    document.getElementById('modal-denied').style.display  = 'block';
-    document.getElementById('modal-icon').textContent = '🚫';
+async function initCamera(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
+    video.srcObject=stream;
+    await new Promise(r=>{video.onloadedmetadata=r;});
+    video.play(); dismissModal(); loadMediaPipe();
+  }catch(e){
+    document.getElementById('modal-default').style.display='none';
+    document.getElementById('modal-denied').style.display='block';
+    document.getElementById('modal-icon').textContent='🚫';
+    document.getElementById('gesture-badge').textContent='✦ NO CAMERA';
   }
 }
+document.getElementById('modal-btn-allow').addEventListener('click',()=>{const b=document.getElementById('modal-btn-allow');b.textContent='⟳  Requesting…';b.style.opacity='0.6';b.style.pointerEvents='none';initCamera();});
+document.getElementById('modal-btn-skip').addEventListener('click',()=>{dismissModal();toast('Mouse & keyboard mode active');document.getElementById('gesture-badge').textContent='✦ MOUSE MODE';});
+document.getElementById('modal-denied-continue').addEventListener('click',()=>dismissModal());
 
-document.getElementById('modal-btn-allow').addEventListener('click', () => {
-  const btn = document.getElementById('modal-btn-allow');
-  btn.textContent = '⟳  Requesting access...';
-  btn.style.opacity = '0.6';
-  btn.style.pointerEvents = 'none';
-  initCamera();
-});
-
-document.getElementById('modal-btn-skip').addEventListener('click', () => {
-  dismissModal();
-  document.getElementById('gesture-display').textContent = '✦ MOUSE MODE ACTIVE ✦';
-});
-
-document.getElementById('modal-denied-continue').addEventListener('click', () => {
-  dismissModal();
-});
-
-function loadMediaPipe() {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js';
-  script.onload = () => {
-    const cameraScript = document.createElement('script');
-    cameraScript.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js';
-    cameraScript.onload = () => setupHands();
-    document.head.appendChild(cameraScript);
-  };
-  document.head.appendChild(script);
+function loadMediaPipe(){
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js';
+  s.onload=()=>{const c2=document.createElement('script');c2.src='https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js';c2.onload=()=>setupHands();document.head.appendChild(c2);};
+  document.head.appendChild(s);
 }
-
-function setupHands() {
-  try {
-    handsLib = new Hands({locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${f}`});
-    handsLib.setOptions({ maxNumHands:1, modelComplexity:0, minDetectionConfidence:0.6, minTrackingConfidence:0.5 });
+function setupHands(){
+  try{
+    handsLib=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${f}`});
+    handsLib.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:0.6,minTrackingConfidence:0.5});
     handsLib.onResults(onHandResults);
+    new Camera(video,{onFrame:async()=>{if(handsLib)await handsLib.send({image:video});},width:320,height:240}).start();
+  }catch(e){console.log('MediaPipe error',e);}
+}
 
-    const cam = new Camera(video, {
-      onFrame: async () => { if(handsLib) await handsLib.send({image:video}); },
-      width:320, height:240
+function d2D(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+
+// ── Gesture debounce counters ─────────────────
+let gDb={peace:0,prev:0,point:0,horns:0,ok:0,call:0,vulcan:0,wave:0};
+let prevHandX=0.5, waveAccum=0, lastGesture='none', gestureFlashCooldown=0;
+
+// Draw wrist tilt arc on side canvas
+function drawTiltMeter(angle){
+  const cv=document.getElementById('tilt-arc');
+  if(!cv) return;
+  const ctx=cv.getContext('2d'), w=60, h=34;
+  ctx.clearRect(0,0,w,h);
+  // arc track
+  ctx.beginPath(); ctx.arc(w/2,h,22,Math.PI,0); ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=3; ctx.stroke();
+  // filled arc
+  const norm=Math.max(0,Math.min(1,(angle+1.2)/2.4));
+  ctx.beginPath(); ctx.arc(w/2,h,22,Math.PI,Math.PI+norm*Math.PI); ctx.strokeStyle='rgba(180,140,255,0.7)'; ctx.lineWidth=3; ctx.stroke();
+  // needle
+  const a=Math.PI+norm*Math.PI;
+  ctx.beginPath(); ctx.moveTo(w/2,h); ctx.lineTo(w/2+Math.cos(a)*20,h+Math.sin(a)*20);
+  ctx.strokeStyle='var(--accent)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(w/2,h,3,0,Math.PI*2); ctx.fillStyle='var(--accent)'; ctx.fill();
+}
+
+function flashGesture(emoji){
+  if(gestureFlashCooldown>0) return;
+  const el=document.getElementById('gesture-flash');
+  document.getElementById('gesture-flash-inner').textContent=emoji;
+  el.classList.remove('pop');
+  void el.offsetWidth; // reflow
+  el.classList.add('pop');
+  gestureFlashCooldown=30;
+}
+
+function highlightGuideRow(id){
+  document.querySelectorAll('.gg-row').forEach(r=>r.classList.remove('active'));
+  if(id) document.getElementById(id)?.classList.add('active');
+}
+
+function onHandResults(results){
+  hctx.clearRect(0,0,160,120); handPresent=false;
+  if(!results.multiHandLandmarks?.length){
+    document.getElementById('gesture-badge').textContent='✦ SCANNING';
+    highlightGuideRow(null);
+    return;
+  }
+  handPresent=true;
+  const lm=results.multiHandLandmarks[0];
+
+  // ── Draw skeleton ──────────────────────────
+  if(S.showSkeleton){
+    hctx.strokeStyle='rgba(180,140,255,0.5)';hctx.lineWidth=1.5;
+    [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+     [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]].forEach(([a,b])=>{
+      hctx.beginPath();hctx.moveTo(lm[a].x*160,lm[a].y*120);hctx.lineTo(lm[b].x*160,lm[b].y*120);hctx.stroke();
     });
-    cam.start();
-    handsReady = true;
-  } catch(e) {
-    console.log('MediaPipe setup error:', e);
-  }
-}
-
-function dist2D(a, b) {
-  return Math.hypot(a.x-b.x, a.y-b.y);
-}
-
-let peaceDebounce = 0;
-let pointBurst    = 0;
-
-function onHandResults(results) {
-  hctx.clearRect(0, 0, 180, 135);
-  handPresent = false;
-
-  if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
-    document.getElementById('gesture-display').textContent = '✦ SCANNING HANDS ✦';
-    autoRotate = true;
-    return;
+    lm.forEach(p=>{hctx.beginPath();hctx.arc(p.x*160,p.y*120,1.7,0,Math.PI*2);hctx.fillStyle='rgba(220,180,255,0.9)';hctx.fill();});
   }
 
-  handPresent = true;
-  autoRotate  = false;
-  const lm = results.multiHandLandmarks[0];
+  handX=lm[9].x; handY=lm[9].y;
 
-  // Draw skeleton
-  hctx.strokeStyle = 'rgba(196,160,255,0.6)';
-  hctx.lineWidth = 1.5;
-  const connections = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-  for (const [a,b] of connections) {
-    hctx.beginPath();
-    hctx.moveTo(lm[a].x*180, lm[a].y*135);
-    hctx.lineTo(lm[b].x*180, lm[b].y*135);
-    hctx.stroke();
-  }
-  for (const p of lm) {
-    hctx.beginPath();
-    hctx.arc(p.x*180, p.y*135, 2, 0, Math.PI*2);
-    hctx.fillStyle = 'rgba(255,200,255,0.9)';
-    hctx.fill();
-  }
-
-  // Palm center
-  handX = lm[9].x;
-  handY = lm[9].y;
-
-  // Finger states (extended = tip above pip)
-  const fingers = [
-    lm[4].x < lm[3].x, // thumb (simplified)
-    lm[8].y < lm[6].y,
-    lm[12].y < lm[10].y,
-    lm[16].y < lm[14].y,
-    lm[20].y < lm[18].y,
+  // ── Finger extension (tip above PIP) ───────
+  // Thumb uses X axis (mirrored), others use Y
+  const fi=[
+    lm[4].x < lm[3].x,   // thumb
+    lm[8].y  < lm[6].y,  // index
+    lm[12].y < lm[10].y, // middle
+    lm[16].y < lm[14].y, // ring
+    lm[20].y < lm[18].y, // pinky
   ];
+  const ext    = fi.filter(Boolean).length;
+  const spread = ([4,8,12,16,20].reduce((a,id)=>a+d2D(lm[id],lm[9]),0))/5;
+  const pinch  = d2D(lm[4],lm[8]);
+  const fT=fi[0],fI=fi[1],fM=fi[2],fR=fi[3],fP=fi[4];
 
-  const extCount = fingers.filter(Boolean).length;
+  // ── Wrist tilt (roll): angle between wrist-0 and MCP-5 ──
+  const wristAngle = Math.atan2(lm[5].y-lm[0].y, lm[5].x-lm[0].x);
+  drawTiltMeter(wristAngle);
 
-  // Palm spread = avg distance from palm to finger tips
-  const palmCenter = lm[9];
-  const tipIds = [4,8,12,16,20];
-  const spread = tipIds.reduce((acc,id)=>acc+dist2D(lm[id],palmCenter),0)/5;
+  // ── Wave detection: track X velocity of palm ──
+  const dX = handX - prevHandX;
+  waveAccum = waveAccum*0.85 + Math.abs(dX);
+  prevHandX = handX;
 
-  // Pinch = thumb-index close
-  const pinch = dist2D(lm[4], lm[8]);
+  // ── Decrement debounces ─────────────────────
+  for(const k in gDb) if(gDb[k]>0) gDb[k]--;
+  if(gestureFlashCooldown>0) gestureFlashCooldown--;
 
-  // Detect gestures
-  let gesture = 'none';
+  // ── Classify gesture (priority order) ──────
+  let g='none';
 
-  if (extCount === 0 || spread < 0.09) {
-    gesture = 'fist';
-    targetExpand = Math.max(0.3, targetExpand - 0.015);
-  } else if (extCount >= 4 || spread > 0.2) {
-    gesture = 'open';
-    targetExpand = Math.min(2.5, targetExpand + 0.012);
-  } else if (fingers[1] && fingers[2] && !fingers[3] && !fingers[4]) {
-    gesture = 'peace';
-    if (peaceDebounce <= 0) {
-      switchTemplate(currentTemplate + 1);
-      peaceDebounce = 40;
+  // 1. FIST — all fingers curled
+  if(ext===0 || spread<0.09){
+    g='fist';
+    targetExpand=Math.max(0.3,targetExpand-0.015);
+    highlightGuideRow('gg-fist');
+  }
+  // 2. OPEN HAND — all extended
+  else if(ext>=4 || spread>0.2){
+    g='open';
+    targetExpand=Math.min(2.5,targetExpand+0.012);
+    highlightGuideRow('gg-open');
+  }
+  // 3. PEACE ✌️ — index+middle only → next template
+  else if(fI&&fM&&!fR&&!fP&&!fT){
+    g='peace';
+    highlightGuideRow('gg-peace');
+    if(gDb.peace<=0){ switchTemplate(currentTemplate+1); gDb.peace=50; flashGesture('✌️'); }
+  }
+  // 4. THREE FINGERS 🤟 — index+middle+ring → prev template  
+  else if(fI&&fM&&fR&&!fP&&!fT){
+    g='three';
+    highlightGuideRow('gg-three');
+    if(gDb.prev<=0){ switchTemplate(currentTemplate-1); gDb.prev=50; flashGesture('🤟'); }
+  }
+  // 5. POINT ☝️ — index only → burst
+  else if(fI&&!fM&&!fR&&!fP){
+    g='point';
+    highlightGuideRow('gg-point');
+    if(gDb.point<=0){ triggerBurst(); gDb.point=25; flashGesture('☝️'); }
+  }
+  // 6. PINCH 🤌 — thumb+index close, others curl → rotate
+  else if(pinch<0.055&&!fM&&!fR&&!fP){
+    g='pinch';
+    highlightGuideRow('gg-pinch');
+    pts.rotation.y+=(handX-0.5)*0.08;
+    pts.rotation.x+=(handY-0.5)*0.04;
+  }
+  // 7. HORNS 🤘 — index+pinky extended, middle+ring down → speed up
+  else if(fI&&!fM&&!fR&&fP){
+    g='horns';
+    highlightGuideRow('gg-horns');
+    if(gDb.horns<=0){
+      S.speed=Math.min(4.0,S.speed+0.25);
+      document.getElementById('sl-speed').value=S.speed;
+      document.getElementById('val-speed').textContent=S.speed.toFixed(2);
+      toast('⚡ Speed: '+S.speed.toFixed(2)+'×');
+      flashGesture('🤘'); gDb.horns=18;
     }
-  } else if (fingers[1] && !fingers[2] && !fingers[3] && !fingers[4]) {
-    gesture = 'point';
-    if (pointBurst <= 0) {
-      triggerBurst();
-      pointBurst = 20;
+  }
+  // 8. OK 👌 — thumb+index pinching, others extended → slow down
+  else if(pinch<0.06&&fM&&fR&&fP){
+    g='ok';
+    highlightGuideRow('gg-ok');
+    if(gDb.ok<=0){
+      S.speed=Math.max(0.1,S.speed-0.25);
+      document.getElementById('sl-speed').value=S.speed;
+      document.getElementById('val-speed').textContent=S.speed.toFixed(2);
+      toast('🐢 Speed: '+S.speed.toFixed(2)+'×');
+      flashGesture('👌'); gDb.ok=18;
     }
-  } else if (pinch < 0.05) {
-    gesture = 'pinch';
-    particles.rotation.y += (handX - 0.5) * 0.08;
-    particles.rotation.x += (handY - 0.5) * 0.04;
+  }
+  // 9. CALL ME 🤙 — thumb+pinky extended, others curled → next palette
+  else if(fT&&!fI&&!fM&&!fR&&fP){
+    g='call';
+    highlightGuideRow('gg-call');
+    if(gDb.call<=0){
+      const np=(S.activePalette+1)%6;
+      S.activePalette=np;
+      document.querySelectorAll('.palette-btn').forEach((b,idx)=>b.classList.toggle('active',idx===np));
+      rebuildColors();
+      toast('🎨 Palette '+(np+1)+'/6');
+      flashGesture('🤙'); gDb.call=50;
+    }
+  }
+  // 10. VULCAN 🖖 — index+middle AND ring+pinky extended, thumb tucked → prev palette
+  else if(!fT&&fI&&fM&&fR&&fP&&d2D(lm[8],lm[12])>0.06&&d2D(lm[16],lm[20])>0.06){
+    g='vulcan';
+    highlightGuideRow('gg-four');
+    if(gDb.vulcan<=0){
+      const np=((S.activePalette-1)+6)%6;
+      S.activePalette=np;
+      document.querySelectorAll('.palette-btn').forEach((b,idx)=>b.classList.toggle('active',idx===np));
+      rebuildColors();
+      toast('🎨 Palette '+(np+1)+'/6');
+      flashGesture('🖖'); gDb.vulcan=50;
+    }
+  }
+  // 11. WRIST TILT — open hand tilted → adjust particle size
+  else if(ext>=3){
+    g='tilt';
+    highlightGuideRow('gg-tilt');
+    // Map wrist roll angle (-1.2 to 1.2 rad) to size 0.3–3.0
+    const norm=Math.max(0,Math.min(1,(wristAngle+1.2)/2.4));
+    S.particleSize=0.3+norm*2.7;
+    document.getElementById('sl-size').value=S.particleSize;
+    document.getElementById('val-size').textContent=S.particleSize.toFixed(2);
   }
 
-  if (peaceDebounce > 0) peaceDebounce--;
-  if (pointBurst  > 0) pointBurst--;
-
-  gestureState = gesture;
-
-  const emojiMap = { none:'✦ HAND DETECTED ✦', fist:'✊ CONTRACTING', open:'🖐 EXPANDING', peace:'✌ NEXT TEMPLATE', point:'☝ BURST EMITTING', pinch:'🤌 ROTATING' };
-  document.getElementById('gesture-display').textContent = emojiMap[gesture] || '✦ READING ✦';
-  document.getElementById('meter-fill').style.height = ((targetExpand-0.3)/2.2*100)+'%';
-}
-
-function triggerBurst() {
-  // Push particles outward from palm position
-  const px = (handX - 0.5) * 20;
-  const py = -(handY - 0.5) * 15;
-  for (let i = 0; i < NUM_PARTICLES; i++) {
-    const dx = positions[i*3]   - px;
-    const dy = positions[i*3+1] - py;
-    const dz = positions[i*3+2];
-    const d  = Math.sqrt(dx*dx+dy*dy+dz*dz) || 1;
-    const force = 1.5 / d;
-    velocities[i*3]   += (dx/d)*force;
-    velocities[i*3+1] += (dy/d)*force;
-    velocities[i*3+2] += (dz/d)*force*0.5;
+  // 12. WAVE 👋 — high X velocity → reset rotation
+  if(waveAccum>0.045&&gDb.wave<=0&&g!=='pinch'){
+    pts.rotation.set(0,0,0);
+    document.getElementById('sl-rot-x').value=0; document.getElementById('val-rot-x').textContent='0°';
+    document.getElementById('sl-rot-y').value=0; document.getElementById('val-rot-y').textContent='0°';
+    toast('👋 Rotation reset!');
+    flashGesture('👋');
+    gDb.wave=60; highlightGuideRow('gg-swipe');
+    g='wave';
   }
+
+  lastGesture=g;
+
+  const labels={
+    none:'✦ HAND DETECTED', fist:'✊ CONTRACTING', open:'🖐 EXPANDING',
+    peace:'✌️ NEXT SHAPE', three:'🤟 PREV SHAPE', point:'☝️ BURSTING',
+    pinch:'🤌 ROTATING', horns:'🤘 SPEED +', ok:'👌 SPEED −',
+    call:'🤙 PALETTE +', vulcan:'🖖 PALETTE −', tilt:'↕️ SIZING',
+    wave:'👋 RESET ROT',
+  };
+  document.getElementById('gesture-badge').textContent=labels[g]||'✦ READING';
+  document.getElementById('sl-expand').value=targetExpand;
+  document.getElementById('val-expand').textContent=targetExpand.toFixed(2);
+  document.getElementById('meter-fill').style.height=((targetExpand-0.3)/2.2*100)+'%';
+  document.getElementById('stat-expand').textContent=targetExpand.toFixed(2)+'×';
 }
 
-// ── ANIMATION LOOP ───────────────────────────
-let clock = 0;
-let lastTemplate = -1;
-
-function animate() {
+// ── Animation loop ────────────────────────────
+let clock=0,fc=0,ft=0,fps=60;
+function animate(ts=0){
   requestAnimationFrame(animate);
-  clock += 0.008;
-  material.uniforms.uTime.value = clock;
-  material.uniforms.uExpand.value = expandFactor;
-
-  // Smooth expand
-  expandFactor += (targetExpand - expandFactor) * 0.05;
-
-  // Auto-rotate
-  if (autoRotate || !handPresent) {
-    particles.rotation.y += 0.0015;
-    particles.rotation.x += 0.0003;
-  }
-
-  // Camera sway
-  camera.position.x += ((handX-0.5)*4 - camera.position.x) * 0.04;
-  camera.position.y += (-(handY-0.5)*3 - camera.position.y) * 0.04;
-  camera.lookAt(0,0,0);
-
-  // Particle transition
-  if (transitionT < 1) {
-    transitionT = Math.min(1, transitionT + 0.018);
-    const ease = transitionT < 0.5 ? 2*transitionT*transitionT : -1+(4-2*transitionT)*transitionT;
-    for (let i = 0; i < NUM_PARTICLES; i++) {
-      positions[i*3]   = startPositions[i*3]   + (targetPositions[i*3]   - startPositions[i*3]  ) * ease;
-      positions[i*3+1] = startPositions[i*3+1] + (targetPositions[i*3+1] - startPositions[i*3+1]) * ease;
-      positions[i*3+2] = startPositions[i*3+2] + (targetPositions[i*3+2] - startPositions[i*3+2]) * ease;
-    }
-    geometry.attributes.position.needsUpdate = true;
+  clock+=0.008*S.speed; fc++;
+  if(ts-ft>1000){fps=fc;fc=0;ft=ts;document.getElementById('stat-fps').textContent=fps;}
+  mat.uniforms.uExpand.value=expandFactor;
+  mat.uniforms.uBright.value=S.brightness;
+  mat.uniforms.uSzMult.value=S.particleSize;
+  expandFactor+=(targetExpand-expandFactor)*0.05;
+  if(S.autoRotate&&!handPresent){pts.rotation.y+=0.0015*S.rotSpeed;pts.rotation.x+=0.0003*S.rotSpeed;}
+  if(S.cameraSway){cam.position.x+=((handX-0.5)*4-cam.position.x)*0.04;cam.position.y+=(-(handY-0.5)*3-cam.position.y)*0.04;}
+  cam.lookAt(0,0,0);
+  if(transitionT<1){
+    transitionT=Math.min(1,transitionT+0.018);
+    const e=transitionT<0.5?2*transitionT*transitionT:-1+(4-2*transitionT)*transitionT;
+    for(let i=0;i<NP;i++){pos[i*3]=src[i*3]+(tgt[i*3]-src[i*3])*e;pos[i*3+1]=src[i*3+1]+(tgt[i*3+1]-src[i*3+1])*e;pos[i*3+2]=src[i*3+2]+(tgt[i*3+2]-src[i*3+2])*e;}
+    geo.attributes.position.needsUpdate=true;
   } else {
-    // Idle float + velocity
-    let hasVelocity = false;
-    for (let i = 0; i < NUM_PARTICLES; i++) {
-      const p = phases[i];
-      const t = clock + p;
-      const freq = 0.3 + (i%7)*0.02;
-
-      // Apply velocity
-      if (Math.abs(velocities[i*3]) > 0.001) hasVelocity = true;
-      positions[i*3]   += velocities[i*3];
-      positions[i*3+1] += velocities[i*3+1];
-      positions[i*3+2] += velocities[i*3+2];
-      // Spring back
-      velocities[i*3]   += (targetPositions[i*3]   - positions[i*3])   * 0.03;
-      velocities[i*3+1] += (targetPositions[i*3+1] - positions[i*3+1]) * 0.03;
-      velocities[i*3+2] += (targetPositions[i*3+2] - positions[i*3+2]) * 0.03;
-      velocities[i*3]   *= 0.92;
-      velocities[i*3+1] *= 0.92;
-      velocities[i*3+2] *= 0.92;
-
-      // Idle ripple
-      positions[i*3]   += Math.sin(t*freq)*0.003;
-      positions[i*3+1] += Math.cos(t*freq*1.3)*0.003;
+    for(let i=0;i<NP;i++){
+      pos[i*3]+=vel[i*3];pos[i*3+1]+=vel[i*3+1];pos[i*3+2]+=vel[i*3+2];
+      vel[i*3]+=(tgt[i*3]-pos[i*3])*0.03;vel[i*3+1]+=(tgt[i*3+1]-pos[i*3+1])*0.03;vel[i*3+2]+=(tgt[i*3+2]-pos[i*3+2])*0.03;
+      vel[i*3]*=0.92;vel[i*3+1]*=0.92;vel[i*3+2]*=0.92;
+      if(S.idleTurbulence){const t=clock+phi[i],f=0.3+(i%7)*0.02;pos[i*3]+=Math.sin(t*f)*0.003*S.turbulence;pos[i*3+1]+=Math.cos(t*f*1.3)*0.003*S.turbulence;}
     }
-    geometry.attributes.position.needsUpdate = true;
+    geo.attributes.position.needsUpdate=true;
   }
-
-  // Color pulse
-  colorShift = clock * 0.5;
-
-  renderer.render(scene, camera);
-  document.getElementById('count-value').textContent = NUM_PARTICLES.toLocaleString();
+  colorShift=clock*0.5*S.colorCycleSpeed;
+  rebuildColors();
+  renderer.render(scene,cam);
+  document.getElementById('stat-expand').textContent=expandFactor.toFixed(2)+'×';
 }
 
-// ── KEYBOARD CONTROLS ────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') switchTemplate(currentTemplate + 1);
-  if (e.key === 'ArrowLeft')  switchTemplate(currentTemplate - 1);
-  if (e.key === ' ') {
-    targetExpand = targetExpand > 1.5 ? 1.0 : 2.2;
-    e.preventDefault();
-  }
-  const n = parseInt(e.key);
-  if (!isNaN(n) && n >= 1 && n <= 8) switchTemplate(n-1);
+// ── Slider wiring ─────────────────────────────
+function sliderSetup(id,vid,fmt,cb){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{const v=parseFloat(el.value);document.getElementById(vid).textContent=fmt(v);cb(v);});
+}
+const f2=(v)=>v.toFixed(2), deg=(v)=>Math.round(v)+'°';
+sliderSetup('sl-expand','val-expand',f2,v=>{targetExpand=v;document.getElementById('meter-fill').style.height=((v-0.3)/2.2*100)+'%';document.getElementById('stat-expand').textContent=v.toFixed(2)+'×';});
+sliderSetup('sl-speed','val-speed',f2,v=>S.speed=v);
+sliderSetup('sl-spread','val-spread',f2,v=>{S.spread=v;buildTemplate(currentTemplate);for(let i=0;i<NP*3;i++){pos[i]=tgt[i];src[i]=tgt[i];}transitionT=1;});
+sliderSetup('sl-size','val-size',f2,v=>S.particleSize=v);
+sliderSetup('sl-opacity','val-opacity',f2,v=>S.brightness=v);
+sliderSetup('sl-turbulence','val-turbulence',f2,v=>S.turbulence=v);
+sliderSetup('sl-rot-x','val-rot-x',deg,v=>pts.rotation.x=THREE.MathUtils.degToRad(v));
+sliderSetup('sl-rot-y','val-rot-y',deg,v=>pts.rotation.y=THREE.MathUtils.degToRad(v));
+sliderSetup('sl-rot-speed','val-rot-speed',f2,v=>S.rotSpeed=v);
+sliderSetup('sl-hue','val-hue',deg,v=>{S.hueShift=v;rebuildColors();});
+sliderSetup('sl-saturation','val-saturation',f2,v=>{S.saturation=v;rebuildColors();});
+sliderSetup('sl-color-speed','val-color-speed',f2,v=>S.colorCycleSpeed=v);
+
+// ── Toggle switches ───────────────────────────
+function makeToggle(id,key,offCb){
+  const el=document.getElementById(id);
+  function flip(){S[key]=!S[key];el.classList.toggle('on',S[key]);el.setAttribute('aria-checked',S[key]);if(!S[key]&&offCb)offCb();toast((S[key]?'On':'Off')+' — '+el.getAttribute('aria-label'));}
+  el.addEventListener('click',flip);
+  el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();}});
+}
+makeToggle('tog-autorotate','autoRotate');
+makeToggle('tog-sway','cameraSway');
+makeToggle('tog-idle-turb','idleTurbulence');
+makeToggle('tog-skeleton','showSkeleton',()=>hctx.clearRect(0,0,160,120));
+
+// ── Palette buttons ───────────────────────────
+document.querySelectorAll('.palette-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    S.activePalette=parseInt(btn.dataset.palette);
+    document.querySelectorAll('.palette-btn').forEach((b,i)=>b.classList.toggle('active',i===S.activePalette));
+    rebuildColors(); toast('Palette: '+btn.getAttribute('aria-label'));
+  });
 });
 
-// Mouse fallback for gestures
-document.addEventListener('mousemove', e => {
-  if (!handPresent) {
-    handX = e.clientX / window.innerWidth;
-    handY = e.clientY / window.innerHeight;
-  }
+// ── Template pills ────────────────────────────
+document.querySelectorAll('.tpill').forEach(b=>b.addEventListener('click',()=>switchTemplate(parseInt(b.dataset.t))));
+
+// ── Panel toggle ──────────────────────────────
+let panelOpen=true;
+document.getElementById('ctrl-toggle').addEventListener('click',togglePanel);
+function togglePanel(){panelOpen=!panelOpen;document.getElementById('ctrl-panel').classList.toggle('collapsed',!panelOpen);document.getElementById('ctrl-toggle').textContent=panelOpen?'‹':'›';document.getElementById('ctrl-toggle').setAttribute('aria-expanded',panelOpen);}
+
+// ── Action buttons ────────────────────────────
+document.getElementById('btn-burst').addEventListener('click',triggerBurst);
+document.getElementById('btn-reset-rot').addEventListener('click',()=>{
+  pts.rotation.set(0,0,0);
+  ['sl-rot-x','sl-rot-y'].forEach(id=>{document.getElementById(id).value=0;});
+  document.getElementById('val-rot-x').textContent='0°';
+  document.getElementById('val-rot-y').textContent='0°';
+  toast('Rotation reset');
 });
+document.getElementById('btn-prev').addEventListener('click',()=>switchTemplate(currentTemplate-1));
+document.getElementById('btn-next').addEventListener('click',()=>switchTemplate(currentTemplate+1));
+document.getElementById('btn-help').addEventListener('click',showHelp);
+document.getElementById('btn-reset-all').addEventListener('click',resetAll);
 
-document.addEventListener('wheel', e => {
-  targetExpand = Math.max(0.3, Math.min(2.5, targetExpand - e.deltaY*0.001));
-  document.getElementById('meter-fill').style.height = ((targetExpand-0.3)/2.2*100)+'%';
-}, { passive:true });
+// ── Help ──────────────────────────────────────
+document.getElementById('help-close').addEventListener('click',hideHelp);
+document.getElementById('help-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('help-overlay'))hideHelp();});
+function showHelp(){document.getElementById('help-overlay').classList.add('visible');document.getElementById('help-close').focus();}
+function hideHelp(){document.getElementById('help-overlay').classList.remove('visible');}
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// ── LOADING SEQUENCE ─────────────────────────
-const loadBar  = document.getElementById('loading-bar');
-const loadText = document.getElementById('loading-text');
-const steps    = ['Forging particles...','Calibrating shaders...','Loading hand tracking...','Igniting cosmos...'];
-let loadStep   = 0;
-
-function progressLoad() {
-  if (loadStep >= steps.length) {
-    document.getElementById('loading-screen').style.opacity = '0';
-    setTimeout(()=>{ document.getElementById('loading-screen').style.display='none'; }, 800);
-    // Camera is triggered by modal button — just start animation
-    animate();
-    return;
-  }
-  loadBar.style.width = ((loadStep+1)/steps.length*100)+'%';
-  loadText.textContent = steps[loadStep];
-  loadStep++;
-  setTimeout(progressLoad, 400 + Math.random()*200);
+// ── Reset all ─────────────────────────────────
+function resetAll(){
+  Object.assign(S,{speed:1,spread:1,particleSize:1,brightness:0.9,turbulence:1,rotSpeed:1,hueShift:0,saturation:1,colorCycleSpeed:1,activePalette:0,autoRotate:true,cameraSway:true,idleTurbulence:true,showSkeleton:true});
+  targetExpand=1; pts.rotation.set(0,0,0);
+  const defaults={['sl-expand']:1,['sl-speed']:1,['sl-spread']:1,['sl-size']:1,['sl-opacity']:0.9,['sl-turbulence']:1,['sl-rot-x']:0,['sl-rot-y']:0,['sl-rot-speed']:1,['sl-hue']:0,['sl-saturation']:1,['sl-color-speed']:1};
+  for(const[id,v]of Object.entries(defaults)) document.getElementById(id).value=v;
+  const fmts={['sl-expand']:f2,['sl-speed']:f2,['sl-spread']:f2,['sl-size']:f2,['sl-opacity']:f2,['sl-turbulence']:f2,['sl-rot-x']:deg,['sl-rot-y']:deg,['sl-rot-speed']:f2,['sl-hue']:deg,['sl-saturation']:f2,['sl-color-speed']:f2};
+  const vids={['sl-expand']:'val-expand',['sl-speed']:'val-speed',['sl-spread']:'val-spread',['sl-size']:'val-size',['sl-opacity']:'val-opacity',['sl-turbulence']:'val-turbulence',['sl-rot-x']:'val-rot-x',['sl-rot-y']:'val-rot-y',['sl-rot-speed']:'val-rot-speed',['sl-hue']:'val-hue',['sl-saturation']:'val-saturation',['sl-color-speed']:'val-color-speed'};
+  for(const[id,vid]of Object.entries(vids)) document.getElementById(vid).textContent=fmts[id](parseFloat(document.getElementById(id).value));
+  ['tog-autorotate','tog-sway','tog-idle-turb','tog-skeleton'].forEach(id=>{const el=document.getElementById(id);el.classList.add('on');el.setAttribute('aria-checked',true);});
+  document.querySelectorAll('.palette-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('meter-fill').style.height='30%';
+  buildTemplate(currentTemplate); for(let i=0;i<NP*3;i++){pos[i]=tgt[i];src[i]=tgt[i];}transitionT=1;
+  rebuildColors(); toast('All settings reset'); announce('All settings reset to defaults');
 }
 
-// Initial template display
-document.getElementById('template-display').textContent =
-  TEMPLATES[0].emoji + ' ' + TEMPLATES[0].name;
+// ── Keyboard ──────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowRight') switchTemplate(currentTemplate+1);
+  else if(e.key==='ArrowLeft') switchTemplate(currentTemplate-1);
+  else if(e.key===' '){e.preventDefault();targetExpand=targetExpand>1.5?1.0:2.2;document.getElementById('sl-expand').value=targetExpand;document.getElementById('val-expand').textContent=targetExpand.toFixed(2);}
+  else if(e.key==='b'||e.key==='B') triggerBurst();
+  else if(e.key==='r'||e.key==='R') document.getElementById('btn-reset-rot').click();
+  else if(e.key==='t'||e.key==='T') togglePanel();
+  else if(e.key==='a'||e.key==='A'){const tog=document.getElementById('tog-autorotate');tog.click();}
+  else if(e.key==='h'||e.key==='H'||e.key==='?'){document.getElementById('help-overlay').classList.contains('visible')?hideHelp():showHelp();}
+  else if(e.key==='Escape') hideHelp();
+  else if(e.key==='+'||e.key==='=') cam.position.z=Math.max(8,cam.position.z-1.5);
+  else if(e.key==='-') cam.position.z=Math.min(60,cam.position.z+1.5);
+  else{const n=parseInt(e.key);if(!isNaN(n)&&n>=1&&n<=8)switchTemplate(n-1);}
+});
 
-setTimeout(progressLoad, 300);
+document.addEventListener('wheel',e=>{
+  targetExpand=Math.max(0.3,Math.min(2.5,targetExpand-e.deltaY*0.001));
+  document.getElementById('sl-expand').value=targetExpand;
+  document.getElementById('val-expand').textContent=targetExpand.toFixed(2);
+  document.getElementById('meter-fill').style.height=((targetExpand-0.3)/2.2*100)+'%';
+},{passive:true});
+
+window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+
+// ── Toast & a11y ──────────────────────────────
+function toast(msg){const d=document.createElement('div');d.className='toast';d.textContent=msg;document.getElementById('toast-container').appendChild(d);setTimeout(()=>d.remove(),2500);}
+function announce(msg){const el=document.getElementById('a11y-live');el.textContent='';setTimeout(()=>el.textContent=msg,60);}
+
+// ── Loading ───────────────────────────────────
+const lb=document.getElementById('loading-bar'),lt=document.getElementById('loading-text');
+const steps=['Forging particles…','Calibrating shaders…','Loading gesture engine…','Igniting cosmos…'];
+let ls=0;
+function progressLoad(){
+  if(ls>=steps.length){document.getElementById('loading-screen').style.opacity='0';setTimeout(()=>{document.getElementById('loading-screen').style.display='none';animate();},800);return;}
+  lb.style.width=((ls+1)/steps.length*100)+'%';lt.textContent=steps[ls++];
+  setTimeout(progressLoad,370+Math.random()*160);
+}
+
+updateTemplateUI();
+setTimeout(progressLoad,300);
 </script>
 </body>
 </html>
