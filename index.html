@@ -187,6 +187,284 @@ body{background:var(--bg);overflow:hidden;font-family:'Space Mono',monospace;col
 #modal-denied-continue{display:inline-block;padding:10px 28px;border:1px solid var(--panel-border);border-radius:var(--radius-sm);background:transparent;color:rgba(180,140,255,0.7);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
 #modal-denied-continue:hover{background:rgba(180,140,255,0.08);}
 #modal-denied-continue:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* ═══════════════════════════════════════════════
+   MOBILE & RESPONSIVE OVERHAUL
+   Breakpoints: 768px (tablet), 480px (phone)
+═══════════════════════════════════════════════ */
+
+/* Larger touch targets globally on touch devices */
+@media (hover: none) {
+  .ctrl-slider::-webkit-slider-thumb { width:22px; height:22px; }
+  .ctrl-slider::-moz-range-thumb     { width:22px; height:22px; }
+  .ctrl-slider { height:5px; }
+  .ctrl-btn    { padding:11px 8px; font-size:9px; min-height:40px; }
+  .tpill       { padding:7px 13px; font-size:9px; min-height:34px; }
+  .toggle-switch { width:44px; height:26px; }
+  .toggle-switch::after { width:18px; height:18px; }
+  .toggle-switch.on::after { transform:translateX(20px); }
+  .palette-btn { width:30px; height:30px; }
+}
+
+/* ── TABLET (≤768px) ── */
+@media (max-width: 768px) {
+
+  /* Hide decorative side elements */
+  #gesture-guide  { display:none !important; }
+  #tilt-meter     { display:none !important; }
+  #expand-meter   { display:none !important; }
+
+  /* Compact top bar */
+  #topbar { padding:12px 16px 10px; }
+  #brand-title { font-size:18px; }
+  #brand-sub   { display:none; }
+  #gesture-badge  { font-size:9px; padding:4px 9px; max-width:140px; overflow:hidden; text-overflow:ellipsis; }
+  #template-badge { font-size:10px; min-width:80px; }
+
+  /* Template pills — horizontal scroll strip */
+  #templates-bar {
+    top:56px;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    justify-content:flex-start;
+    padding:0 12px;
+    gap:6px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  #templates-bar::-webkit-scrollbar { display:none; }
+  .tpill { flex-shrink:0; }
+
+  /* Stats bar — smaller, shifted up from bottom panel */
+  #stats-bar {
+    bottom:auto;
+    top:100px;
+    left:50%;
+    transform:translateX(-50%);
+    gap:14px;
+    padding:6px 16px;
+    font-size:0.85em;
+  }
+  .stat-val  { font-size:11px; }
+  .stat-key  { font-size:5px; }
+
+  /* Webcam preview — smaller, top-right corner */
+  #webcam, #hand-canvas {
+    width:110px; height:82px;
+    bottom:auto; top:140px; right:12px;
+  }
+  #cam-label { top:228px; bottom:auto; right:12px; }
+
+  /* Toasts — below stats bar */
+  #toast-container { top:148px; }
+
+  /* Help card — full-width friendly */
+  #help-card { padding:28px 24px; }
+  #help-card h2 { font-size:22px; }
+  .help-grid { grid-template-columns:1fr; gap:8px; }
+
+  /* ── CONTROL PANEL → BOTTOM SHEET on mobile ── */
+  #ctrl-panel {
+    /* Override left-side drawer */
+    left:0 !important; right:0 !important;
+    top:auto !important; bottom:0 !important;
+    width:100% !important;
+    transform:none !important;
+    border-radius:20px 20px 0 0 !important;
+    border-left:1px solid var(--panel-border) !important;
+    border-right:1px solid var(--panel-border) !important;
+    border-bottom:none !important;
+    border-top:1px solid var(--panel-border) !important;
+    max-height:65vh;
+    transition:transform 0.38s cubic-bezier(0.16,1,0.3,1) !important;
+  }
+  #ctrl-panel.collapsed {
+    transform:translateY(calc(100% - 52px)) !important;
+  }
+
+  /* Drag handle at top of sheet */
+  #ctrl-panel-header {
+    position:relative;
+    padding:10px 16px 10px;
+    cursor:grab;
+  }
+  #ctrl-panel-header::before {
+    content:'';
+    display:block;
+    width:36px; height:4px;
+    background:rgba(255,255,255,0.2);
+    border-radius:2px;
+    margin:0 auto 8px;
+  }
+
+  /* Toggle button repositioned as floating pill */
+  #ctrl-toggle {
+    position:static !important;
+    transform:none !important;
+    width:auto !important; height:28px !important;
+    border-radius:14px !important;
+    padding:0 12px !important;
+    font-size:8px !important;
+    letter-spacing:0.15em;
+  }
+
+  /* Ctrl body — horizontal scroll sections on tablet */
+  #ctrl-body {
+    max-height:calc(65vh - 52px);
+    padding:12px 14px 20px;
+    gap:10px;
+  }
+
+  /* Sliders — slightly taller hit area */
+  .ctrl-slider { height:5px; margin:2px 0; }
+}
+
+/* ── PHONE (≤480px) ── */
+@media (max-width: 480px) {
+
+  /* Even more compact topbar */
+  #topbar { padding:10px 12px 8px; }
+  #brand-title { font-size:16px; }
+  #gesture-badge { display:none; }
+  #template-badge { font-size:9px; min-width:60px; }
+
+  /* Template pills */
+  #templates-bar { top:48px; padding:0 8px; gap:5px; }
+  .tpill { padding:5px 10px; font-size:8px; }
+
+  /* Stats — hide on very small, show only template */
+  #stats-bar {
+    top:88px;
+    gap:10px;
+    padding:5px 12px;
+  }
+  /* Hide less important stats on phone */
+  #stats-bar .stat-divider:nth-child(2),
+  #stats-bar .stat-item:nth-child(3),
+  #stats-bar .stat-divider:nth-child(4) { display:none; }
+
+  /* Webcam — very small, tucked into corner */
+  #webcam, #hand-canvas {
+    width:80px; height:60px;
+    top:auto; bottom:170px; right:8px;
+  }
+  #cam-label { bottom:238px; top:auto; right:8px; }
+
+  /* Toast position */
+  #toast-container { top:130px; }
+  .toast { font-size:9px; padding:6px 13px; }
+
+  /* Bottom sheet taller on phone */
+  #ctrl-panel { max-height:72vh; }
+  #ctrl-panel.collapsed { transform:translateY(calc(100% - 48px)) !important; }
+
+  /* Ctrl body sections — stack more tightly */
+  #ctrl-body { padding:10px 12px 24px; gap:8px; }
+  .ctrl-section-label { font-size:6px; letter-spacing:0.3em; }
+  .ctrl-label { font-size:8px; }
+  .ctrl-value { font-size:8px; }
+  .ctrl-btn   { font-size:7px; padding:10px 6px; }
+
+  /* Help overlay — full screen */
+  #help-card { padding:24px 18px; border-radius:0; width:100%; max-height:90vh; overflow-y:auto; }
+
+  /* Gesture flash — smaller on phone */
+  #gesture-flash-inner { font-size:64px; }
+
+  /* Modal adjustments */
+  #modal-card { padding:36px 24px 28px; }
+  #modal-features { gap:12px; }
+}
+
+/* ── LANDSCAPE PHONE (short viewport) ── */
+@media (max-height: 500px) and (max-width: 900px) {
+  #ctrl-panel { max-height:80vh; }
+  #ctrl-panel.collapsed { transform:translateY(calc(100% - 44px)) !important; }
+  #stats-bar { display:none; }
+  #templates-bar { top:44px; }
+  #webcam, #hand-canvas { width:90px; height:67px; top:50px; bottom:auto; right:8px; }
+}
+
+/* ── SAFE AREA for iPhone notch/home indicator ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  #ctrl-body { padding-bottom:calc(20px + env(safe-area-inset-bottom)); }
+  #ctrl-panel { padding-bottom:env(safe-area-inset-bottom); }
+}
+
+
+/* ── MOBILE FAB BAR ── */
+#mobile-fab {
+  display:none;
+  position:fixed;
+  bottom:58px; left:50%; transform:translateX(-50%);
+  z-index:40;
+  gap:10px;
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:30px;
+  padding:8px 14px;
+  backdrop-filter:blur(16px);
+}
+.fab-btn {
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid var(--panel-border);
+  background:rgba(180,140,255,0.08);
+  color:var(--text); font-size:16px;
+  cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center;
+}
+.fab-btn:active { background:rgba(180,140,255,0.25); transform:scale(0.92); }
+.fab-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+@media (max-width: 768px) {
+  #mobile-fab { display:flex; }
+  /* push collapsed panel handle above FAB */
+}
+@media (max-width: 480px) {
+  #mobile-fab { bottom:52px; gap:8px; padding:7px 12px; }
+  .fab-btn { width:38px; height:38px; font-size:15px; }
+}
+
+
+/* ── MODAL GESTURE GRID ── */
+#modal-gestures-title {
+  font-size:8px; letter-spacing:0.35em; text-transform:uppercase;
+  opacity:0.35; text-align:center; margin-bottom:14px;
+}
+#modal-gesture-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 16px;
+  margin-bottom:28px;
+  max-height:260px;
+  overflow-y:auto;
+  padding-right:4px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(180,140,255,0.2) transparent;
+}
+#modal-gesture-grid::-webkit-scrollbar { width:3px; }
+#modal-gesture-grid::-webkit-scrollbar-thumb { background:rgba(180,140,255,0.2); border-radius:2px; }
+.mg-item {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid rgba(180,140,255,0.1);
+  background:rgba(180,140,255,0.04);
+  transition:background 0.2s;
+}
+.mg-item:hover { background:rgba(180,140,255,0.1); }
+.mg-icon { font-size:22px; flex-shrink:0; line-height:1; }
+.mg-info { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.mg-name   { font-size:9px; font-weight:700; letter-spacing:0.08em; opacity:0.9; }
+.mg-effect { font-size:8px; letter-spacing:0.06em; opacity:0.45; }
+
+@media (max-width: 480px) {
+  #modal-gesture-grid { grid-template-columns:1fr; max-height:200px; }
+  #modal-card { max-height:90vh; overflow-y:auto; }
+  .mg-icon { font-size:20px; }
+}
+
 </style>
 </head>
 <body>
@@ -210,12 +488,24 @@ body{background:var(--bg);overflow:hidden;font-family:'Space Mono',monospace;col
     <div id="modal-divider" style="width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,255,0.4),transparent);margin:0 auto 26px;"></div>
     <div id="modal-default">
       <div id="modal-body">Your camera is used locally to detect hand gestures in real time.<br>No footage is stored, recorded, or transmitted anywhere.</div>
-      <div id="modal-features" role="list">
-        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">🖐</div><div class="modal-feature-label">Expand</div></div>
-        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">✌️</div><div class="modal-feature-label">Switch</div></div>
-        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">☝️</div><div class="modal-feature-label">Burst</div></div>
-        <div class="modal-feature" role="listitem"><div class="modal-feature-icon">🤌</div><div class="modal-feature-label">Rotate</div></div>
+
+      <div id="modal-gestures-title" role="heading" aria-level="3">12 Hand Gestures</div>
+
+      <div id="modal-gesture-grid" role="list" aria-label="All supported hand gestures">
+        <div class="mg-item" role="listitem"><span class="mg-icon">🖐</span><div class="mg-info"><span class="mg-name">Open Hand</span><span class="mg-effect">Expand particles</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">✊</span><div class="mg-info"><span class="mg-name">Fist</span><span class="mg-effect">Contract particles</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">✌️</span><div class="mg-info"><span class="mg-name">Peace</span><span class="mg-effect">Next shape</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">🤟</span><div class="mg-info"><span class="mg-name">Three fingers</span><span class="mg-effect">Previous shape</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">☝️</span><div class="mg-info"><span class="mg-name">Point</span><span class="mg-effect">Particle burst</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">🤌</span><div class="mg-info"><span class="mg-name">Pinch</span><span class="mg-effect">Rotate formation</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">🤘</span><div class="mg-info"><span class="mg-name">Horns</span><span class="mg-effect">Speed up</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">👌</span><div class="mg-info"><span class="mg-name">OK</span><span class="mg-effect">Slow down</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">🤙</span><div class="mg-info"><span class="mg-name">Call me</span><span class="mg-effect">Next palette</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">🖖</span><div class="mg-info"><span class="mg-name">Vulcan</span><span class="mg-effect">Prev palette</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">↕️</span><div class="mg-info"><span class="mg-name">Tilt wrist</span><span class="mg-effect">Adjust size</span></div></div>
+        <div class="mg-item" role="listitem"><span class="mg-icon">👋</span><div class="mg-info"><span class="mg-name">Wave</span><span class="mg-effect">Reset rotation</span></div></div>
       </div>
+
       <button id="modal-btn-allow" autofocus>✦ Enable Camera</button>
       <button id="modal-btn-skip">Continue without camera</button>
       <div id="modal-privacy" role="note">🔒 All processing is on-device. Camera feed never leaves your browser.</div>
@@ -940,7 +1230,15 @@ document.querySelectorAll('.tpill').forEach(b=>b.addEventListener('click',()=>sw
 // ── Panel toggle ──────────────────────────────
 let panelOpen=true;
 document.getElementById('ctrl-toggle').addEventListener('click',togglePanel);
-function togglePanel(){panelOpen=!panelOpen;document.getElementById('ctrl-panel').classList.toggle('collapsed',!panelOpen);document.getElementById('ctrl-toggle').textContent=panelOpen?'‹':'›';document.getElementById('ctrl-toggle').setAttribute('aria-expanded',panelOpen);}
+function togglePanel(){
+  const panel  = document.getElementById('ctrl-panel');
+  const toggle = document.getElementById('ctrl-toggle');
+  const fab    = document.getElementById('mobile-fab');
+  panelOpen = !panelOpen;
+  if (panel)  panel.classList.toggle('collapsed', !panelOpen);
+  if (toggle) { toggle.textContent = panelOpen ? '‹' : '›'; toggle.setAttribute('aria-expanded', panelOpen); }
+  if (fab)    fab.setAttribute('aria-hidden', !isMobile() || !panelOpen);
+}
 
 // ── Action buttons ────────────────────────────
 document.getElementById('btn-burst').addEventListener('click',triggerBurst);
@@ -1020,6 +1318,128 @@ function progressLoad(){
 
 updateTemplateUI();
 setTimeout(progressLoad,300);
+
+
+// ═══════════════════════════════════════
+//  MOBILE ENHANCEMENTS
+// ═══════════════════════════════════════
+
+const isMobile = () => window.innerWidth <= 768 || ('ontouchstart' in window);
+
+// ── FAB button wiring (guarded — FAB is injected at end of body) ──
+function wireMobileFAB() {
+  const fabBurst = document.getElementById('fab-burst');
+  const fabPrev  = document.getElementById('fab-prev');
+  const fabNext  = document.getElementById('fab-next');
+  const fabPanel = document.getElementById('fab-panel');
+  if (fabBurst) fabBurst.addEventListener('click', triggerBurst);
+  if (fabPrev)  fabPrev.addEventListener('click', () => switchTemplate(currentTemplate - 1));
+  if (fabNext)  fabNext.addEventListener('click', () => switchTemplate(currentTemplate + 1));
+  if (fabPanel) fabPanel.addEventListener('click', togglePanel);
+}
+
+// ── Mobile bottom sheet drag-to-open ──
+const ctrlHeader = document.getElementById('ctrl-panel-header');
+if (ctrlHeader) {
+  ctrlHeader.addEventListener('click', e => {
+    if (isMobile() && e.target.id !== 'ctrl-toggle') togglePanel();
+  });
+}
+
+// ── Swipe left/right on canvas to switch templates ──
+let swipeStartX = 0, swipeStartY = 0, swipeActive = false;
+renderer.domElement.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    swipeActive = true;
+  }
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchend', e => {
+  if (!swipeActive) return;
+  swipeActive = false;
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const dy = e.changedTouches[0].clientY - swipeStartY;
+  // Only count horizontal swipes, not drags (drag ratio check)
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+    if (dx < 0) switchTemplate(currentTemplate + 1);
+    else         switchTemplate(currentTemplate - 1);
+  }
+}, { passive: true });
+
+// ── Pinch-to-expand on canvas ──────────
+let pinchStartDist = 0, pinchStartExpand = 1;
+renderer.domElement.addEventListener('touchstart', e => {
+  if (e.touches.length === 2) {
+    swipeActive = false; // cancel swipe
+    pinchStartDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    pinchStartExpand = targetExpand;
+  }
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const scale = dist / (pinchStartDist || 1);
+    targetExpand = Math.max(0.3, Math.min(2.5, pinchStartExpand * scale));
+    document.getElementById('sl-expand').value = targetExpand;
+    document.getElementById('val-expand').textContent = targetExpand.toFixed(2);
+    document.getElementById('meter-fill').style.height = ((targetExpand - 0.3) / 2.2 * 100) + '%';
+    document.getElementById('stat-expand').textContent = targetExpand.toFixed(2) + '×';
+  }
+}, { passive: true });
+
+// ── Responsive resize handler ──────────
+function applyMobileLayout() {
+  const mobile = isMobile();
+  const panel   = document.getElementById('ctrl-panel');
+  const toggle  = document.getElementById('ctrl-toggle');
+  const fab     = document.getElementById('mobile-fab');
+  // Auto-start collapsed on mobile so canvas is visible
+  if (mobile && panelOpen && panel && toggle) {
+    panelOpen = false;
+    panel.classList.add('collapsed');
+    toggle.textContent = '›';
+    toggle.setAttribute('aria-expanded', false);
+  }
+  // Show/hide FAB (only if it exists in DOM yet)
+  if (fab) fab.setAttribute('aria-hidden', !mobile);
+}
+
+// Run on load and resize
+wireMobileFAB();
+applyMobileLayout();
+window._origResizeHandler = window.onresize;
+window.addEventListener('resize', applyMobileLayout);
+
+// ── Double-tap canvas to burst on mobile ──
+let lastTap = 0;
+renderer.domElement.addEventListener('touchend', e => {
+  if (e.touches.length > 0) return;
+  const now = Date.now();
+  if (now - lastTap < 280 && e.changedTouches.length === 1) {
+    triggerBurst();
+    flashGesture('⚡');
+  }
+  lastTap = now;
+}, { passive: true });
+
 </script>
+
+<!-- Mobile floating action bar (shows only on mobile) -->
+<div id="mobile-fab" aria-label="Quick actions" aria-hidden="true">
+  <button class="fab-btn" id="fab-burst"    aria-label="Burst">⚡</button>
+  <button class="fab-btn" id="fab-prev"     aria-label="Previous shape">‹</button>
+  <button class="fab-btn" id="fab-next"     aria-label="Next shape">›</button>
+  <button class="fab-btn" id="fab-panel"    aria-label="Toggle controls">⚙</button>
+</div>
+
 </body>
 </html>
